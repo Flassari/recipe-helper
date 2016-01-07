@@ -1,0 +1,22 @@
+{
+  "name": "recipe-helper",
+  "version": "1.0.0",
+  "description": "Import google doc recipes to wunderlist shopping list.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flassari/recipe-helper.git"
+  },
+  "author": "Ari Arnbjörnsson <ari@flassari.is> (http://flassari.is)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Flassari/recipe-helper/issues"
+  },
+  "homepage": "https://github.com/Flassari/recipe-helper#readme",
+  "dependencies": {
+  	"express": "*"
+  }
+}
