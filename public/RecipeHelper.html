@@ -105,6 +105,43 @@
       {
         console.log("File downloaded, length: " + htmlContent.length);
         var xmlDoc = $.parseHTML( htmlContent );
+
+        var currentRecipe = null;
+        var recipesByCategory = { };
+        var currentCategory = recipesByCategory['Default'] = [];
+        var totalRecipeCount = 0;
+
+
+        for (var i = 0; i < xmlDoc.length; i++)
+        {
+          var node = xmlDoc[i];
+          if (node.nodeName === "H1") // New recipe category
+          {
+            currentCategory = recipesByCategory[node.innerText] = [];
+            currentRecipe = null;
+          }
+          else if (node.nodeName === "H2") // New recipe
+          {
+            currentRecipe = {
+              name: node.innerText,
+              ingredients: []
+            };
+            totalRecipeCount++;
+            currentCategory.push(currentRecipe);
+          }
+          else if (node.nodeName === "UL") // Recipe ingredients
+          {
+            if (currentRecipe !== null)
+            {
+              for (var j = 0; j < node.children.length; j++)
+              {
+                currentRecipe.ingredients.push(node.children[j].innerText);
+              }
+            }
+          }
+        }
+
+        console.log("imported " + totalRecipeCount + " recipes.");
       }
 
     </script>
