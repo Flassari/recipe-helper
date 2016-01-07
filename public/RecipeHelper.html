@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Wunderlist Recipe Helper</title>
+
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <script type="text/javascript">
+
+      // The Browser API key obtained from the Google Developers Console.
+      var developerKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
+
+      // The Client ID obtained from the Google Developers Console. Replace with your own Client ID.
+      var clientId = "866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com"
+
+      // Scope to use to access user's photos.
+      var scope = ['https://www.googleapis.com/auth/drive.readonly'];
+
+      var pickerApiLoaded = false;
+      var oauthToken;
+
+      // Use the API Loader script to load google.picker and gapi.auth.
+      function onApiLoad() {
+        gapi.load('auth', {'callback': onAuthApiLoad});
+        gapi.load('picker', {'callback': onPickerApiLoad});
+        gapi.client.load('drive', 'v2', onDriveApiLoad);
+      }
+
+      function onDriveApiLoad()
+      {
+        console.log("Drive API loaded.");
+      }
+
+      function onAuthApiLoad() {
+        window.gapi.auth.authorize(
+            {
+              'client_id': clientId,
+              'scope': scope,
+              'immediate': false
+            },
+            handleAuthResult);
+      }
+
+      function onPickerApiLoad() {
+        pickerApiLoaded = true;
+        createPicker();
+      }
+
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+          oauthToken = authResult.access_token;
+          createPicker();
+        }
+      }
+
+      // Create and render a Picker object for picking user Photos.
+      function createPicker() {
+        if (pickerApiLoaded && oauthToken) {
+          var picker = new google.picker.PickerBuilder().
+              addView(google.picker.ViewId.DOCUMENTS).
+              setOAuthToken(oauthToken).
+              setDeveloperKey(developerKey).
+              setCallback(pickerCallback).
+              build();
+          picker.setVisible(true);
+        }
+      }
+
+      // A simple callback implementation.
+      function pickerCallback(data) {
+        var fileId = 'nothing';
+        if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+          var doc = data[google.picker.Response.DOCUMENTS][0];
+          fileId = doc[google.picker.Document.ID];
+
+          printFile(fileId);
+        }
+        var message = 'You picked: ' + fileId;
+        document.getElementById('result').innerHTML = message;
+      }
+
+      /**
+       * Print a file's metadata.
+       *
+       * @param {String} fileId ID of the file to print metadata for.
+       */
+      function printFile(fileId) {
+        var request = gapi.client.drive.files.get({
+          'fileId': fileId
+        });
+        request.execute(function(resp) {
+          var htmlExportUrl = resp.exportLinks['text/html'];
+          var accessToken = gapi.auth.getToken().access_token;
+
+          $.ajax({
+              url: htmlExportUrl,
+              headers: {'Authorization': 'Bearer ' + accessToken},
+              success: htmlDownloaded
+          });
+        });
+      }
+
+      function htmlDownloaded(htmlContent)
+      {
+        console.log("File downloaded, length: " + htmlContent.length);
+        var xmlDoc = $.parseHTML( htmlContent );
+      }
+
+    </script>
+  </head>
+  <body>
+    <div id="result"></div>
+
+    <!-- The Google API Loader script. -->
+    <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=onApiLoad"></script>
+  </body>
+</html>
