@@ -111,6 +111,8 @@
         var currentCategory = recipesByCategory['Default'] = [];
         var totalRecipeCount = 0;
 
+        var imgUrl;
+
 
         for (var i = 0; i < xmlDoc.length; i++)
         {
@@ -139,9 +141,41 @@
               }
             }
           }
+          else if (node.nodeName.substr(0, 1) === "H" && node.nodeName.length == 2)
+          {
+            // Other header we don't care about, ignore.
+            currentRecipe = null;
+          }
+          else if ((imgUrl = getNestedImage(node)) !== null)
+          {
+            if (currentRecipe !== null)
+            {
+              currentRecipe.img = imgUrl;
+            }
+          }
         }
 
         console.log("imported " + totalRecipeCount + " recipes.");
+      }
+
+      function getNestedImage(node)
+      {
+        if (node.nodeName === "IMG")
+        {
+          return node.src;
+        }
+        else
+        {
+          for (var i = 0; i < node.children.length; i++)
+          {
+            var childImg = getNestedImage(node.children[i]);
+            if (childImg !== null)
+            {
+              return childImg;
+            }
+          }
+        }
+        return null;
       }
 
     </script>
