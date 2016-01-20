@@ -20,13 +20,20 @@ var accessToken;
 
 window.onApiLoaded = function()
 {
-	authenticator.on('done', onAuthenticated)
-	filePicker.on('done', onFilePicked)
-	downloader.on('done', onFileDownloaded);
+	if (localStorage.recipes)
+	{
+		showRecipes(JSON.parse(localStorage.recipes));
+	}
+	else
+	{
+		authenticator.on('done', onAuthenticated)
+		filePicker.on('done', onFilePicked)
+		downloader.on('done', onFileDownloaded);
 
-	filePicker.initialize();
-	downloader.initialize();
-	authenticator.authenticate(clientId, scope);
+		filePicker.initialize();
+		downloader.initialize();
+		authenticator.authenticate(clientId, scope);
+	}
 }
 
 function onAuthenticated(authResult)
@@ -48,5 +55,13 @@ function onFileDownloaded(fileContent)
 	console.log("File downloaded with length of " + fileContent.length);
 	var recipes = parser.parse(fileContent);
 
+	// Store on device
+	localStorage.recipes = JSON.stringify(recipes);
+
+	showRecipes(recipes);
+}
+
+function showRecipes(recipes)
+{
 	ReactDOM.render(<RecipeList recipes={recipes} />, document.getElementById('recipes'));
 }
