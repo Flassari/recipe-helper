@@ -1,24 +1,34 @@
-var React = require("react");
-var ReactDOM = require("react-dom");
+var React = require('react');
+var ReactDOM = require('react-dom');
+
+var RecipeList = require('./components/RecipeList.jsx');
 
 var authenticator = require('./authenticator.js');
 var filePicker = require('./drive-picker.js');
 var downloader = require('./drive-document-downloader.js');
 
+var wunderlist = require('./wunderlist.js');;
 var parser = require('./recipe-parser.js');
 
-var RecipeList = require('./components/RecipeList.jsx');
+// --- Generate these yourself if forking this project ---
+var wunderlistClientId = '950a881bc370b266e57d';
+var googleDeveloperKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
+var googleClientId = '866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com';
+// See wunderlist_token_exchanger.php for example implementation of token.php, you'll need to host this yourself.
+var wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 
-// The Browser API key obtained from the Google Developers Console.
-var developerKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
-// The Client ID obtained from the Google Developers Console. Replace with your own Client ID.
-var clientId = "866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com"
 // Scope for readonly access.
 var scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
 var accessToken;
 
 window.onApiLoaded = function()
+{
+	wunderlist.on('loggedIn', onWunderlistLoggedIn)
+	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger);
+}
+
+function onWunderlistLoggedIn()
 {
 	if (localStorage.recipes)
 	{
@@ -32,7 +42,7 @@ window.onApiLoaded = function()
 
 		filePicker.initialize();
 		downloader.initialize();
-		authenticator.authenticate(clientId, scope);
+		authenticator.authenticate(googleClientId, scope);
 	}
 }
 
@@ -41,7 +51,7 @@ function onAuthenticated(authResult)
 	if (authResult && !authResult.error)
 	{
 		accessToken = authResult.access_token;
-		filePicker.pick(authResult.access_token, developerKey);
+		filePicker.pick(authResult.access_token, googleDeveloperKey);
 	}
 }
 
@@ -52,7 +62,6 @@ function onFilePicked(fileId)
 
 function onFileDownloaded(fileContent)
 {
-	console.log("File downloaded with length of " + fileContent.length);
 	var recipes = parser.parse(fileContent);
 
 	// Store on device
