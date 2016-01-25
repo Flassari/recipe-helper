@@ -1,52 +1,31 @@
-// Extends EventEmitter
-const EventEmitter = require('events');
-module.exports = new EventEmitter();
+var Promise = require('bluebird');
+var apiLoaded = false;
 
-var isInitializing = false;
-var isInitialized = false;
-var isAuthenticationPending = false;
-
-var pendingData;
-
-function initialize()
+function loadApi()
 {
-	if (isInitializing || isInitialized) return;
-
-	isInitializing = true;
-	gapi.load('auth', {'callback': onApiLoaded});
-}
-
-function onApiLoaded()
-{
-	isInitialized = true;
-	isInitializing = false;
-	if (isAuthenticationPending)
+	return new Promise(function(resolve, reject)
 	{
-		isAuthenticationPending = false;
-		authenticate(pendingData.clientId, pendingData.scope);
-	}
-}
-
-function authenticate(clientId, scope)
-{
-	if (!isInitialized)
-	{
-		pendingData = { clientId: clientId, scope: scope };
-		isAuthenticationPending = true;
-		if (!isInitializing)
+		if (apiLoaded)
 		{
-			initialize();
+			resolve();
 		}
-		return;
-	}
-	
-	gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, handleAuthResult);
+		else
+		{
+			gapi.load('auth', {'callback': function() {
+				apiLoaded = true;
+				resolve();
+			}});
+		}
+	});
 }
 
-function handleAuthResult(authResult)
+module.exports.authenticate = function(clientId, scope)
 {
-	module.exports.emit('done', authResult);
+	return loadApi().then(function()
+	{
+		return new Promise(function(resolve, reject)
+		{
+			gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, resolve);
+		});
+	});
 }
-
-module.exports.initialize = initialize;
-module.exports.authenticate = authenticate;

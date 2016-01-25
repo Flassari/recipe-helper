@@ -24,8 +24,8 @@ var accessToken;
 
 window.onApiLoaded = function()
 {
-	wunderlist.on('loggedIn', onWunderlistLoggedIn)
-	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger);
+	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
+	.then(onWunderlistLoggedIn);
 }
 
 function onWunderlistLoggedIn()
@@ -36,13 +36,16 @@ function onWunderlistLoggedIn()
 	}
 	else
 	{
-		authenticator.on('done', onAuthenticated)
-		filePicker.on('done', onFilePicked)
-		downloader.on('done', onFileDownloaded);
-
-		filePicker.initialize();
-		downloader.initialize();
-		authenticator.authenticate(googleClientId, scope);
+		authenticator.authenticate(googleClientId, scope)
+		.then(onAuthenticated)
+		.then(function() { return filePicker.pick(accessToken, googleDeveloperKey); })
+		.then(function(fileId) { return downloader.download(fileId, accessToken); })
+		.then(function(fileContent) {
+			var recipes = parser.parse(fileContent);
+			localStorage.recipes = JSON.stringify(recipes); // Store on device
+			showRecipes(recipes);
+		});
+		return null;
 	}
 }
 
@@ -51,26 +54,18 @@ function onAuthenticated(authResult)
 	if (authResult && !authResult.error)
 	{
 		accessToken = authResult.access_token;
-		filePicker.pick(authResult.access_token, googleDeveloperKey);
+		return Promise.resolve();
 	}
-}
-
-function onFilePicked(fileId)
-{
-	downloader.download(fileId, accessToken);
-}
-
-function onFileDownloaded(fileContent)
-{
-	var recipes = parser.parse(fileContent);
-
-	// Store on device
-	localStorage.recipes = JSON.stringify(recipes);
-
-	showRecipes(recipes);
+	return Promise.reject();
 }
 
 function showRecipes(recipes)
 {
-	ReactDOM.render(<RecipeList recipes={recipes} />, document.getElementById('recipes'));
+	ReactDOM.render(<RecipeList recipes={recipes} clicked={addRecipeToWunderlist}/>, document.getElementById('recipes'));
+}
+
+function addRecipeToWunderlist(recipe)
+{
+	console.log("Adding recipe " + recipe);
+	wunderlist.addIngredients(recipe.ingredients);
 }

@@ -1,74 +1,56 @@
-// Extends EventEmitter
-const EventEmitter = require('events');
-module.exports = new EventEmitter();
+var Promise = require('bluebird');
 
-var isInitializing = false;
-var isInitialized = false;
-var isPickerPending = false;
-
+var apiLoaded = false;
 var picker = null;
 
-var pendingData;
-
-function initialize()
+function loadApi()
 {
-	if (isInitializing || isInitialized) return;
-
-	isInitializing = true;
-	gapi.load('picker', {'callback': onApiLoaded});
-}
-
-function onApiLoaded()
-{
-	isInitialized = true;
-	isInitializing = false;
-	if (isPickerPending)
+	return new Promise(function(resolve, reject)
 	{
-		isPickerPending = false;
-		pick(pendingData.oauthToken, pendingData.developerKey);
-	}
-}
-
-function pick(oauthToken, developerKey)
-{
-	if (!isInitialized)
-	{
-		pendingData = { oauthToken: oauthToken, developerKey: developerKey};
-		pendingOauthToken = oauthToken;
-		pendingDeveloperKey = developerKey;
-		isPickerPending = true;
-		if (!isInitializing)
+		if (apiLoaded)
 		{
-			initialize();
+			resolve();
 		}
-		return;
-	}
-
-	if (picker === null)
-	{
-		console.log("Dev key: " + developerKey);
-
-		picker = new google.picker.PickerBuilder().
-			addView(google.picker.ViewId.DOCUMENTS).
-			setOAuthToken(oauthToken).
-			setDeveloperKey(developerKey).
-			setCallback(pickerCallback).
-			build();
-	}
-
-	picker.setVisible(true);
+		else
+		{
+			gapi.load('picker', {'callback': function() {
+				apiLoaded = true;
+				resolve();
+			}});
+		}
+	});
 }
 
-function pickerCallback(data)
+module.exports.pick = function pick(oauthToken, developerKey)
 {
-	if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED)
+	return loadApi()
+	.then(function() { createPicker(oauthToken, developerKey)})
+	.then(function()
 	{
-		var doc = data[google.picker.Response.DOCUMENTS][0];
-		var fileId = doc[google.picker.Document.ID];
-
-		module.exports.emit('done', fileId);
-	}
+		return new Promise(function(resolve, reject)
+		{
+			picker.setVisible(true);
+			picker.setCallback(function(data)
+			{
+				if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED)
+				{
+					var doc = data[google.picker.Response.DOCUMENTS][0];
+					var fileId = doc[google.picker.Document.ID];
+					resolve(fileId);
+				}
+			});
+		});
+	});
 }
 
-module.exports.initialize = initialize;
-module.exports.pick = pick;
+function createPicker(oauthToken, developerKey) {
+	if (picker) return null;
+
+	picker = new google.picker.PickerBuilder()
+		.addView(google.picker.ViewId.DOCUMENTS)
+		.setOAuthToken(oauthToken)
+		.setDeveloperKey(developerKey)
+		.build();
+
+	return null;
+}
