@@ -1,7 +1,7 @@
 var React = require('react');
 
-
-module.exports = React.createClass({
+module.exports = React.createClass(
+{
 	handleClick: function (e)
 	{
 		this.props.clicked(this.props);

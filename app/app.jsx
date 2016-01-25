@@ -1,7 +1,8 @@
+var Promise = require('bluebird');
 var React = require('react');
 var ReactDOM = require('react-dom');
-
 var RecipeList = require('./components/RecipeList.jsx');
+var ListChooser = require('./components/ListChooser.jsx');
 
 var authenticator = require('./authenticator.js');
 var filePicker = require('./drive-picker.js');
@@ -21,12 +22,17 @@ var wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 var scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
 var accessToken;
+var shoppingListId;
 
 window.onApiLoaded = function()
 {
 	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
+	.then(getShoppingList)
+	.then(function(listId) {
+		shoppingListId = listId;
+	})
 	.then(getRecipes)
-	.then(function(recipes) { showRecipes(recipes); })
+	.then(showRecipes)
 }
 
 function getRecipes()
@@ -59,13 +65,31 @@ function onAuthenticated(authResult)
 	return Promise.reject();
 }
 
+function getShoppingList()
+{
+	if (localStorage.shoppingList)
+	{
+		return Promise.resolve(localStorage.shoppingList);
+	}
+
+	return wunderlist.getLists(wunderlistClientId)
+	.then(function(lists) {
+		return new Promise(function( resolve, reject) {
+			ReactDOM.render(<ListChooser lists={lists} done={resolve}/>, document.getElementById('main'));
+		});
+	}).then(function(listId) {
+		localStorage.shoppingList = listId;
+		return listId;
+	});
+}
+
 function showRecipes(recipes)
 {
-	ReactDOM.render(<RecipeList recipes={recipes} clicked={addRecipeToWunderlist}/>, document.getElementById('recipes'));
+	ReactDOM.render(<RecipeList recipes={recipes} clicked={addRecipeToWunderlist}/>, document.getElementById('main'));
 }
 
 function addRecipeToWunderlist(recipe)
 {
 	console.log("Adding recipe " + recipe);
-	wunderlist.addIngredients(recipe.ingredients);
+	wunderlist.addItems(recipe.ingredients);
 }
