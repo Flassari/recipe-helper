@@ -25,27 +25,27 @@ var accessToken;
 window.onApiLoaded = function()
 {
 	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
-	.then(onWunderlistLoggedIn);
+	.then(getRecipes)
+	.then(function(recipes) { showRecipes(recipes); })
 }
 
-function onWunderlistLoggedIn()
+function getRecipes()
 {
 	if (localStorage.recipes)
 	{
-		showRecipes(JSON.parse(localStorage.recipes));
+		return Promise.resolve(JSON.parse(localStorage.recipes));
 	}
 	else
 	{
-		authenticator.authenticate(googleClientId, scope)
+		return authenticator.authenticate(googleClientId, scope)
 		.then(onAuthenticated)
 		.then(function() { return filePicker.pick(accessToken, googleDeveloperKey); })
 		.then(function(fileId) { return downloader.download(fileId, accessToken); })
 		.then(function(fileContent) {
 			var recipes = parser.parse(fileContent);
 			localStorage.recipes = JSON.stringify(recipes); // Store on device
-			showRecipes(recipes);
+			return recipes;
 		});
-		return null;
 	}
 }
 
