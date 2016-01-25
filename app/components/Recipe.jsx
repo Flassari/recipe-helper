@@ -2,6 +2,10 @@ var React = require('react');
 
 
 module.exports = React.createClass({
+	handleClick: function (e)
+	{
+		this.props.clicked(this.props);
+	},
 	render: function()
 	{
 		var styles = {
@@ -25,6 +29,7 @@ module.exports = React.createClass({
 			<div style={styles.recipe}>
 				<img style={styles.image} src={this.props.img} />
 				<div>{this.props.name}</div>
+				<button type="button" onClick={this.handleClick}>Add</button>
 			</div>
 		)
 	}

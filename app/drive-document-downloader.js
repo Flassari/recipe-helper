@@ -1,69 +1,37 @@
-// Extends EventEmitter
-const EventEmitter = require('events');
-module.exports = new EventEmitter();
+var Promise = require('bluebird');
+var apiLoaded = false;
 
-var isInitializing = false;
-var isInitialized = false;
-var isDownloadPending = false;
-
-var authAccessToken;
-
-var pendingData;
-
-function initialize()
+function loadApi()
 {
-	if (isInitializing || isInitialized) return;
-
-	isInitializing = true;
-    gapi.client.load('drive', 'v2', onApiLoaded);
-}
-
-function onApiLoaded()
-{
-	isInitialized = true;
-	isInitializing = false;
-	if (isDownloadPending)
+	return new Promise(function(resolve, reject)
 	{
-		isDownloadPending = false;
-		download(pendingData.fileId, pendingData.accessToken);
-	}
-}
-
-function download(fileId, accessToken)
-{
-	authAccessToken = accessToken;
-
-	if (!isInitialized)
-	{
-		pendingData = { fileId: fileId, accessToken: accessToken };
-		isDownloadPending = true;
-		if (!isInitializing)
+		if (apiLoaded)
 		{
-			initialize();
+			resolve();
 		}
-		return;
-	}
-	
-	var request = gapi.client.drive.files.get({ 'fileId': fileId });
-	request.execute(onFileInfoDownloaded);
-}
-
-function onFileInfoDownloaded(resp)
-{
-	var htmlExportUrl = resp.exportLinks['text/html'];
-	//var accessToken = gapi.auth.getToken().access_token;
-
-	$.ajax({
-		url: htmlExportUrl,
-		headers: {'Authorization': 'Bearer ' + authAccessToken},
-		success: onHtmlFileDownloaded
+		else
+		{
+			gapi.client.load('drive', 'v2', function() {
+				apiLoaded = true;
+				resolve();
+			});
+		}
 	});
 }
 
-function onHtmlFileDownloaded(htmlContent)
+module.exports.download = function download(fileId, accessToken)
 {
-	module.exports.emit('done', htmlContent);
+	return loadApi()
+		.then(function() { return downloadFileInfo(fileId, accessToken) })
+		.then(function(fileInfo) {
+			return $.ajax({ url: fileInfo.exportLinks['text/html'], headers: {'Authorization': 'Bearer ' + accessToken}});
+		});
 }
 
-module.exports.initialize = initialize;
-module.exports.download = download;
+function downloadFileInfo(fileId, accessToken)
+{
+	return new Promise(function (resolve, reject) {
+		var request = gapi.client.drive.files.get({ 'fileId': fileId });
+		request.execute(resolve);
+	});
+}
