@@ -1,21 +1,21 @@
 var quantities;
 var name;
 
-module.exports = function RecipeItem(str)
+var RecipeItem = module.exports = function RecipeItem(str)
 {
-	quantities = {};
+	this.quantities = {};
 	var quantsAndNameMatch = str.match(/((?:\d+[^\d\s]*(?:\s\+\s)?)*)\s?(.*)/);
 	var quantsString = quantsAndNameMatch[1];
-	name = quantsAndNameMatch[2];
+	this.name = quantsAndNameMatch[2];
 
 	var quantMatch, quantsMatchRegex = /(\d+)([^\d\s]*)/g;
 	while(quantMatch = quantsMatchRegex.exec(quantsString))
 	{
-		quantities[quantMatch[2]] = parseInt(quantMatch[1]);
+		this.quantities[quantMatch[2]] = parseInt(quantMatch[1]);
 	}
 }
 
-module.exports.Add = function(otherRecipe)
+RecipeItem.prototype.add = function(otherRecipe)
 {
 	var otherHasQuantity = false;
 	for (var quantityName in otherRecipe.quantities)
@@ -38,7 +38,7 @@ module.exports.Add = function(otherRecipe)
 	}
 }
 
-module.exports.GetString = function()
+RecipeItem.prototype.getString = function()
 {
 	var returnStr = this.name;
 
