@@ -22,14 +22,18 @@ var wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 var scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
 var accessToken;
+var wunderlistAccessToken;
 var shoppingListId;
 
 window.onApiLoaded = function()
 {
 	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
+	.then(function(accessToken) {
+		wunderlistAccessToken = accessToken;
+	})
 	.then(getShoppingList)
 	.then(function(listId) {
-		shoppingListId = listId;
+		shoppingListId = parseInt(listId);
 	})
 	.then(getRecipes)
 	.then(showRecipes)
@@ -91,5 +95,5 @@ function showRecipes(recipes)
 function addRecipeToWunderlist(recipe)
 {
 	console.log("Adding recipe " + recipe);
-	wunderlist.addItems(recipe.ingredients);
+	wunderlist.addItems(shoppingListId, recipe.ingredients, wunderlistClientId, wunderlistAccessToken);
 }

@@ -4,7 +4,7 @@ var ListItem = React.createClass(
 {
 	handleClick: function (e)
 	{
-		this.props.done(this.props.id);
+		this.props.done(parseInt(this.props.id));
 	},
 	render: function()
 	{
@@ -14,17 +14,15 @@ var ListItem = React.createClass(
 
 module.exports = React.createClass(
 {
-	listChosen: function (listId)
-	{
-		this.props.done(listId);
-	},
 	render: function()
 	{
-		var children = [];
-		for (var i = 0; i < this.props.lists.length; i++)
-		{
-			children.push(<ListItem {...this.props.lists[i]} done={this.listChosen} />);
-		}
-		return (<div>{children}</div>);
+		var done = this.props.done;
+		return (
+			<div>
+				{this.props.lists.map(function(list) {
+					return <ListItem {...list} done={done} />;
+				})}
+			</div>
+		);
 	}
 });

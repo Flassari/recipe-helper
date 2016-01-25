@@ -1,5 +1,3 @@
-var RecipeItem = require('./recipe-data-item.js');
-
 function getNestedImage(node)
 {
 	if (node.nodeName === "IMG")
@@ -54,7 +52,7 @@ module.exports.parse = function(fileContent)
 			{
 				for (var j = 0; j < node.children.length; j++)
 				{
-					currentRecipe.ingredients.push(new RecipeItem(node.children[j].innerText));
+					currentRecipe.ingredients.push(node.children[j].innerText);
 				}
 			}
 		}
