@@ -22,10 +22,10 @@ function loadApi()
 module.exports.download = function download(fileId, accessToken)
 {
 	return loadApi()
-		.then(function() { return downloadFileInfo(fileId, accessToken) })
-		.then(function(fileInfo) {
-			return $.ajax({ url: fileInfo.exportLinks['text/html'], headers: {'Authorization': 'Bearer ' + accessToken}});
-		});
+	.then(function() { return downloadFileInfo(fileId, accessToken) })
+	.then(function(fileInfo) {
+		return $.ajax({ url: fileInfo.exportLinks['text/html'], headers: {'Authorization': 'Bearer ' + accessToken}});
+	});
 }
 
 function downloadFileInfo(fileId, accessToken)

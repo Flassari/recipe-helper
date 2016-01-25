@@ -1,56 +1,23 @@
-// Extends EventEmitter
-var EventEmitter = require('events');
-module.exports = new EventEmitter();
-
 var Promise = require('bluebird');
-
 var wurl = require('wurl');
 
-var clientId;
-var tokenExchangerUrl;
-
-module.exports.logIn = function(_clientId, _tokenExchangerUrl)
+module.exports.logIn = function(clientId, tokenExchangerUrl)
 {
-	return new Promise(function(resolve, reject)
+	if (localStorage.wunderlistAccessToken)
 	{
-		if (localStorage.wunderlistAccessToken)
-		{
-			resolve();
-			return;
-		}
+		return Promise.resolve(localStorage.wunderlistAccessToken);
+	}
 
-		clientId = _clientId;
-		tokenExchangerUrl = _tokenExchangerUrl;
+	var code = wurl('?code');
+	if (code) // User just returned from wunderlist auth page.
+	{
+		return getAuthToken(code, tokenExchangerUrl)
+	}
 
-		var code = wurl('?code');
-		if (code) // User just returned from wunderlist auth page.
-		{
-			getAuthToken(code).done(resolve);
-			return;
-		}
-
-		// Not logged in and not redirected from oauth page, redirect to log in page.
-		var path = 'https://www.wunderlist.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + window.location.href  + '&state=' + Math.random().toString(36);
-		window.location.href = path;
-	});
-}
-
-module.exports.getLists = function()
-{
-	return $.ajax({
-		url: 'https://a.wunderlist.com/api/v1/lists',
-		type : 'GET',
-		headers: {
-			'X-Client-ID': clientId,
-			'X-Access-Token': localStorage.wunderlistAccessToken
-		},
-		data: 'code=' + code
-	});
-}
-
-module.exports.addItems = function(ingredients)
-{
-
+	// Not logged in and not redirected from oauth page, redirect to log in page.
+	var path = 'https://www.wunderlist.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + window.location.href  + '&state=' + Math.random().toString(36);
+	window.location.href = path;
+	return null;
 }
 
 function getAuthToken(code)
@@ -59,10 +26,29 @@ function getAuthToken(code)
 		url: tokenExchangerUrl,
 		type : 'POST',
 		data: 'code=' + code
-	}).done(authTokenDone);
+	}).done(function() {
+		localStorage.wunderlistAccessToken = response.access_token;
+		return localStorage.wunderlistAccessToken;
+	});
 }
 
-function authTokenDone(response)
+module.exports.getLists = function(clientId)
 {
-	localStorage.wunderlistAccessToken = response.access_token;
+	return module.exports.logIn()
+	.then(function(accessToken) {
+		return $.ajax({
+			url: 'https://a.wunderlist.com/api/v1/lists',
+			type : 'GET',
+			headers: {
+				'X-Client-ID': clientId,
+				'X-Access-Token': accessToken
+			}
+		});
+	});
 }
+
+module.exports.addItems = function(ingredients)
+{
+
+}
+
