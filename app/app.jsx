@@ -7,6 +7,7 @@ var ListChooser = require('./components/ListChooser.jsx');
 var authenticator = require('./authenticator.js');
 var filePicker = require('./drive-picker.js');
 var downloader = require('./drive-document-downloader.js');
+var recipeManager = require('./recipe-manager.js');
 
 var wunderlist = require('./wunderlist.js');;
 var parser = require('./recipe-parser.js');
@@ -36,6 +37,10 @@ window.onApiLoaded = function()
 		shoppingListId = parseInt(listId);
 	})
 	.then(getRecipes)
+	.then(function(recipes) {
+		recipeManager.setRecipes(recipes);
+		return recipes;
+	})
 	.then(showRecipes)
 }
 
@@ -76,7 +81,7 @@ function getShoppingList()
 		return Promise.resolve(localStorage.shoppingList);
 	}
 
-	return wunderlist.getLists(wunderlistClientId)
+	return wunderlist.getLists(wunderlistClientId, wunderlistAccessToken)
 	.then(function(lists) {
 		return new Promise(function( resolve, reject) {
 			ReactDOM.render(<ListChooser lists={lists} done={resolve}/>, document.getElementById('main'));
@@ -92,8 +97,16 @@ function showRecipes(recipes)
 	ReactDOM.render(<RecipeList recipes={recipes} clicked={addRecipeToWunderlist}/>, document.getElementById('main'));
 }
 
-function addRecipeToWunderlist(recipe)
+function addRecipeToWunderlist(recipeId)
 {
-	console.log("Adding recipe " + recipe);
-	wunderlist.addItems(shoppingListId, recipe.ingredients, wunderlistClientId, wunderlistAccessToken);
+	recipeManager.setRecipeInProgress(recipeId, true);
+	console.log("Adding recipe.");
+
+	var recipe = recipeManager.recipesById[recipeId];
+
+	wunderlist.addItems(shoppingListId, recipe.ingredients, wunderlistClientId, wunderlistAccessToken)
+	.then(function() {
+		console.log("Recipe added.");
+		recipeManager.setRecipeInProgress(recipeId, false);
+	});
 }
