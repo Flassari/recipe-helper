@@ -28,7 +28,7 @@ function getAuthToken(code, tokenExchangerUrl)
 		url: tokenExchangerUrl,
 		type : 'POST',
 		data: 'code=' + code
-	}).done(function() {
+	}).done(function(response) {
 		localStorage.wunderlistAccessToken = response.access_token;
 		return localStorage.wunderlistAccessToken;
 	});
