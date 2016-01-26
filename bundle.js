@@ -20318,7 +20318,7 @@
 		return null;
 	};
 
-	function getAuthToken(code) {
+	function getAuthToken(code, tokenExchangerUrl) {
 		return $.ajax({
 			url: tokenExchangerUrl,
 			type: 'POST',
