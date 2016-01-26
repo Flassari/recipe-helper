@@ -22,7 +22,7 @@ var wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 // Scope for readonly access.
 var scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
-var accessToken;
+var googleAccessToken;
 var wunderlistAccessToken;
 var shoppingListId;
 
@@ -48,14 +48,14 @@ function getRecipes()
 {
 	if (localStorage.recipes)
 	{
-		return Promise.resolve(JSON.parse(localStorage.recipes));
+		return JSON.parse(localStorage.recipes);
 	}
 	else
 	{
 		return authenticator.authenticate(googleClientId, scope)
 		.then(onAuthenticated)
-		.then(function() { return filePicker.pick(accessToken, googleDeveloperKey); })
-		.then(function(fileId) { return downloader.download(fileId, accessToken); })
+		.then(function() { return filePicker.pick(googleAccessToken, googleDeveloperKey); })
+		.then(function(fileId) { return downloader.download(fileId, googleAccessToken); })
 		.then(function(fileContent) {
 			var recipes = parser.parse(fileContent);
 			localStorage.recipes = JSON.stringify(recipes); // Store on device
@@ -68,7 +68,7 @@ function onAuthenticated(authResult)
 {
 	if (authResult && !authResult.error)
 	{
-		accessToken = authResult.access_token;
+		googleAccessToken = authResult.access_token;
 		return Promise.resolve();
 	}
 	return Promise.reject();
@@ -78,7 +78,7 @@ function getShoppingList()
 {
 	if (localStorage.shoppingList)
 	{
-		return Promise.resolve(localStorage.shoppingList);
+		return localStorage.shoppingList;
 	}
 
 	return wunderlist.getLists(wunderlistClientId, wunderlistAccessToken)

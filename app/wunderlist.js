@@ -24,26 +24,27 @@ module.exports.logIn = function(clientId, tokenExchangerUrl)
 
 function getAuthToken(code, tokenExchangerUrl)
 {
-	return $.ajax({
+	return Promise.resolve($.ajax({
 		url: tokenExchangerUrl,
 		type : 'POST',
 		data: 'code=' + code
-	}).done(function(response) {
-		localStorage.wunderlistAccessToken = response.access_token;
-		return localStorage.wunderlistAccessToken;
-	});
+	}).then(function(response) {
+		var token = response.access_token;
+		localStorage.wunderlistAccessToken = token;
+		return token;
+	}));
 }
 
 module.exports.getLists = function(clientId, accessToken)
 {
-	return $.ajax({
+	return Promise.resolve($.ajax({
 		url: 'https://a.wunderlist.com/api/v1/lists',
 		type : 'GET',
 		headers: {
 			'X-Client-ID': clientId,
 			'X-Access-Token': accessToken
 		}
-	});
+	}));
 }
 
 module.exports.addItems = function(listId, items, clientId, accessToken)
