@@ -34,23 +34,22 @@ function getAuthToken(code)
 	});
 }
 
-module.exports.getLists = function(clientId)
+module.exports.getLists = function(clientId, accessToken)
 {
-	return module.exports.logIn()
-	.then(function(accessToken) {
-		return $.ajax({
-			url: 'https://a.wunderlist.com/api/v1/lists',
-			type : 'GET',
-			headers: {
-				'X-Client-ID': clientId,
-				'X-Access-Token': accessToken
-			}
-		});
+	return $.ajax({
+		url: 'https://a.wunderlist.com/api/v1/lists',
+		type : 'GET',
+		headers: {
+			'X-Client-ID': clientId,
+			'X-Access-Token': accessToken
+		}
 	});
 }
 
 module.exports.addItems = function(listId, items, clientId, accessToken)
 {
+	if (items.length == 0) return Promise.resolve();
+
 	var nonAddedItems = {};
 
 	$.each(items, function(i, recipeItemString) {
@@ -58,14 +57,10 @@ module.exports.addItems = function(listId, items, clientId, accessToken)
 		nonAddedItems[recipeItem.name] = recipeItem;
 	});
 
-	$.ajax({
-		url: "https://a.wunderlist.com/api/v1/tasks",
-		headers : {
-            'X-Client-ID': clientId,
-			'X-Access-Token': accessToken
-        },
-		data: {list_id: listId}
-	}).done(function(tasks) {
+	return getTasks(listId, clientId, accessToken)
+	.done(function(tasks) {
+		var requests = [];
+
 		$.each(tasks, function(i, task) {
 			var taskItem = new RecipeItem(task.title);
 
@@ -74,42 +69,64 @@ module.exports.addItems = function(listId, items, clientId, accessToken)
 				// The task item is already in the recipe, add the recipe item to it!
 				taskItem.add(nonAddedItems[taskItem.name]);
 				delete nonAddedItems[taskItem.name];
-
-				$.ajax({
-					url: "https://a.wunderlist.com/api/v1/tasks/" + task.id,
-					type : "PATCH",
-					headers : {
-		                "Content-Type" : "application/json",
-		                'X-Client-ID': clientId,
-						'X-Access-Token': accessToken
-		            },
-					data: JSON.stringify({
-						revision: task.revision,
-						title: taskItem.getString()
-					})
-				});
+				requests.push(changeTask(task.id, task.revision, taskItem.getString(), clientId, accessToken));
 			}
-
 		});
 
 		// Create new tasks for the ones that weren't updated
-		$.each(nonAddedItems, function(nonAddedItemName, nonAddedItem) {
-			var newCount = nonAddedItems[nonAddedItem];
-			$.ajax({
-				url: "https://a.wunderlist.com/api/v1/tasks",
-				type : "POST",
-				headers : {
-	                "Content-Type" : "application/json",
-	                'X-Client-ID': clientId,
-					'X-Access-Token': accessToken
-	            },
-				data: JSON.stringify({
-					list_id: listId,
-					title: nonAddedItem.getString()
-				})
-			});
+		$.each(nonAddedItems, function(nonAddedItemName, nonAddedItem)
+		{
+			requests.push(newTask(nonAddedItem.getString(), listId, clientId, accessToken));
 		});
 
+		return Promise.all(requests)
+	});
+}
+
+function getTasks(listId, clientId, accessToken)
+{
+	return $.ajax({
+		url: "https://a.wunderlist.com/api/v1/tasks",
+		headers : {
+            'X-Client-ID': clientId,
+			'X-Access-Token': accessToken
+        },
+		data: {list_id: listId}
+	});
+}
+
+function changeTask(taskId, taskRevision, newTitle, clientId, accessToken)
+{
+	return $.ajax({
+		url: "https://a.wunderlist.com/api/v1/tasks/" + taskId,
+		type : "PATCH",
+		headers : {
+            "Content-Type" : "application/json",
+            'X-Client-ID': clientId,
+			'X-Access-Token': accessToken
+        },
+		data: JSON.stringify({
+			revision: taskRevision,
+			title: newTitle
+		})
+	});
+}
+
+
+function newTask(newTitle, listId, clientId, accessToken)
+{
+	return $.ajax({
+		url: "https://a.wunderlist.com/api/v1/tasks",
+		type : "POST",
+		headers : {
+            "Content-Type" : "application/json",
+            'X-Client-ID': clientId,
+			'X-Access-Token': accessToken
+        },
+		data: JSON.stringify({
+			list_id: listId,
+			title: newTitle
+		})
 	});
 }
 

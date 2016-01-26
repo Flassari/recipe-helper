@@ -41,7 +41,8 @@ module.exports.parse = function(fileContent)
 		{
 			currentRecipe = {
 				name: node.innerText,
-				ingredients: []
+				ingredients: [],
+				id: totalRecipeCount
 			};
 			totalRecipeCount++;
 			currentCategory.push(currentRecipe);
