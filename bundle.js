@@ -77,7 +77,7 @@
 	// Scope for readonly access.
 	var scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
-	var accessToken;
+	var googleAccessToken;
 	var wunderlistAccessToken;
 	var shoppingListId;
 
@@ -94,12 +94,12 @@
 
 	function getRecipes() {
 		if (localStorage.recipes) {
-			return Promise.resolve(JSON.parse(localStorage.recipes));
+			return JSON.parse(localStorage.recipes);
 		} else {
 			return authenticator.authenticate(googleClientId, scope).then(onAuthenticated).then(function () {
-				return filePicker.pick(accessToken, googleDeveloperKey);
+				return filePicker.pick(googleAccessToken, googleDeveloperKey);
 			}).then(function (fileId) {
-				return downloader.download(fileId, accessToken);
+				return downloader.download(fileId, googleAccessToken);
 			}).then(function (fileContent) {
 				var recipes = parser.parse(fileContent);
 				localStorage.recipes = JSON.stringify(recipes); // Store on device
@@ -110,7 +110,7 @@
 
 	function onAuthenticated(authResult) {
 		if (authResult && !authResult.error) {
-			accessToken = authResult.access_token;
+			googleAccessToken = authResult.access_token;
 			return Promise.resolve();
 		}
 		return Promise.reject();
@@ -118,7 +118,7 @@
 
 	function getShoppingList() {
 		if (localStorage.shoppingList) {
-			return Promise.resolve(localStorage.shoppingList);
+			return localStorage.shoppingList;
 		}
 
 		return wunderlist.getLists(wunderlistClientId, wunderlistAccessToken).then(function (lists) {
@@ -20319,25 +20319,26 @@
 	};
 
 	function getAuthToken(code, tokenExchangerUrl) {
-		return $.ajax({
+		return Promise.resolve($.ajax({
 			url: tokenExchangerUrl,
 			type: 'POST',
 			data: 'code=' + code
-		}).done(function (response) {
-			localStorage.wunderlistAccessToken = response.access_token;
-			return localStorage.wunderlistAccessToken;
-		});
+		}).then(function (response) {
+			var token = response.access_token;
+			localStorage.wunderlistAccessToken = token;
+			return token;
+		}));
 	}
 
 	module.exports.getLists = function (clientId, accessToken) {
-		return $.ajax({
+		return Promise.resolve($.ajax({
 			url: 'https://a.wunderlist.com/api/v1/lists',
 			type: 'GET',
 			headers: {
 				'X-Client-ID': clientId,
 				'X-Access-Token': accessToken
 			}
-		});
+		}));
 	};
 
 	module.exports.addItems = function (listId, items, clientId, accessToken) {
