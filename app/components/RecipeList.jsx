@@ -11,7 +11,7 @@ module.exports = React.createClass(
 			var recipes = this.props.recipes[recipeCategory];
 			for (var i = 0; i < recipes.length; i++)
 			{
-				children.push(<Recipe key={this.props.id} clicked={this.props.clicked} {...recipes[i]}/>);
+				children.push(<Recipe key={recipes[i].id} clicked={this.props.clicked} {...recipes[i]}/>);
 			}
 		}
 		return (<div>{children}</div>);

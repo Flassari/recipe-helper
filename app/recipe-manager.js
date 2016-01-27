@@ -1,12 +1,13 @@
 var RecipeManager = function()
 {
 	this.listeners = {};
-	this.recipesById = {};
+	this.recipesById = null;
 }
 
 RecipeManager.prototype.setRecipes = function(recipes)
 {
 	this.recipes = recipes;
+	this.recipesById = {};
 
 	for(var recipeCategory in recipes)
 	{

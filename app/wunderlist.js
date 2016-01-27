@@ -53,38 +53,41 @@ module.exports.addItems = function(listId, items, clientId, accessToken)
 
 	var nonAddedItems = {};
 
-	$.each(items, function(i, recipeItemString) {
+	$.each(items, function(i, recipeItemString)
+	{
 		var recipeItem = new RecipeItem(recipeItemString);
 		nonAddedItems[recipeItem.name] = recipeItem;
 	});
 
-	return getTasks(listId, clientId, accessToken)
-	.done(function(tasks) {
+	return getCurrentShoppingList(listId, clientId, accessToken)
+	.done(function(shoppingListItems)
+	{
 		var requests = [];
 
-		$.each(tasks, function(i, task) {
-			var taskItem = new RecipeItem(task.title);
+		$.each(shoppingListItems, function(i, shoppingListItem)
+		{
+			var shoppingListRecipeItem = new RecipeItem(shoppingListItem.title);
 
-			if (nonAddedItems[taskItem.name] != undefined)
+			if (nonAddedItems[shoppingListRecipeItem.name] != undefined)
 			{
 				// The task item is already in the recipe, add the recipe item to it!
-				taskItem.add(nonAddedItems[taskItem.name]);
-				delete nonAddedItems[taskItem.name];
-				requests.push(changeTask(task.id, task.revision, taskItem.getString(), clientId, accessToken));
+				shoppingListRecipeItem.add(nonAddedItems[shoppingListRecipeItem.name]);
+				delete nonAddedItems[shoppingListRecipeItem.name];
+				requests.push(changeShoppingListItem(shoppingListItem.id, shoppingListItem.revision, shoppingListRecipeItem.getString(), clientId, accessToken));
 			}
 		});
 
 		// Create new tasks for the ones that weren't updated
 		$.each(nonAddedItems, function(nonAddedItemName, nonAddedItem)
 		{
-			requests.push(newTask(nonAddedItem.getString(), listId, clientId, accessToken));
+			requests.push(newShoppingListItem(nonAddedItem.getString(), listId, clientId, accessToken));
 		});
 
 		return Promise.all(requests)
 	});
 }
 
-function getTasks(listId, clientId, accessToken)
+function getCurrentShoppingList(listId, clientId, accessToken)
 {
 	return $.ajax({
 		url: "https://a.wunderlist.com/api/v1/tasks",
@@ -96,7 +99,7 @@ function getTasks(listId, clientId, accessToken)
 	});
 }
 
-function changeTask(taskId, taskRevision, newTitle, clientId, accessToken)
+function changeShoppingListItem(taskId, taskRevision, newTitle, clientId, accessToken)
 {
 	return $.ajax({
 		url: "https://a.wunderlist.com/api/v1/tasks/" + taskId,
@@ -114,7 +117,7 @@ function changeTask(taskId, taskRevision, newTitle, clientId, accessToken)
 }
 
 
-function newTask(newTitle, listId, clientId, accessToken)
+function newShoppingListItem(newTitle, listId, clientId, accessToken)
 {
 	return $.ajax({
 		url: "https://a.wunderlist.com/api/v1/tasks",

@@ -36,12 +36,13 @@ window.onApiLoaded = function()
 	.then(function(listId) {
 		shoppingListId = parseInt(listId);
 	})
+	.then(clearMain)
 	.then(getRecipes)
 	.then(function(recipes) {
 		recipeManager.setRecipes(recipes);
 		return recipes;
 	})
-	.then(showRecipes)
+	.then(showRecipes);
 }
 
 function getRecipes()
@@ -50,28 +51,59 @@ function getRecipes()
 	{
 		return JSON.parse(localStorage.recipes);
 	}
-	else
-	{
-		return authenticator.authenticate(googleClientId, scope)
-		.then(onAuthenticated)
-		.then(function() { return filePicker.pick(googleAccessToken, googleDeveloperKey); })
-		.then(function(fileId) { return downloader.download(fileId, googleAccessToken); })
-		.then(function(fileContent) {
-			var recipes = parser.parse(fileContent);
-			localStorage.recipes = JSON.stringify(recipes); // Store on device
-			return recipes;
-		});
-	}
+	return downloadAndCacheRecipes();
 }
 
-function onAuthenticated(authResult)
+function downloadAndCacheRecipes()
 {
-	if (authResult && !authResult.error)
+	return authenticate()
+	.then(getDriveFileId)
+	.then(function(fileId) { 
+		return downloader.download(fileId, googleAccessToken);
+	})
+	.then(function(fileContent) {
+		var recipes = parser.parse(fileContent);
+		localStorage.recipes = JSON.stringify(recipes); // Store on device
+		return recipes;
+	});
+}
+
+function getDriveFileId()
+{
+	if (localStorage.fileId)
 	{
-		googleAccessToken = authResult.access_token;
-		return Promise.resolve();
+		return localStorage.fileId;
 	}
-	return Promise.reject();
+
+	return pickDriveFile();
+}
+
+function pickDriveFile()
+{
+	// Returns fileID string.
+	return filePicker.pick(googleAccessToken, googleDeveloperKey)
+	.then(function(fileId) {
+		localStorage.fileId = fileId;
+		return fileId;
+	});
+}
+
+function authenticate()
+{
+	if (googleAccessToken)
+	{
+		return Promise.resolve(googleAccessToken);
+	}
+
+	return authenticator.authenticate(googleClientId, scope)
+	.then(function(authResult) {
+		if (authResult && !authResult.error)
+		{
+			googleAccessToken = authResult.access_token;
+			return Promise.resolve(googleAccessToken);
+		}
+		return Promise.reject();
+	});
 }
 
 function getShoppingList()
@@ -94,7 +126,25 @@ function getShoppingList()
 
 function showRecipes(recipes)
 {
-	ReactDOM.render(<RecipeList recipes={recipes} clicked={addRecipeToWunderlist}/>, document.getElementById('main'));
+	ReactDOM.render(
+		<div>
+			<button type="button" onClick={refreshRecipes} >Refresh recipes</button>
+			<RecipeList recipes={recipes} clicked={addRecipeToWunderlist} />
+		</div>
+	,document.getElementById('main'));
+
+}
+
+function refreshRecipes()
+{
+	clearMain();
+	downloadAndCacheRecipes()
+	.then(showRecipes);
+}
+
+function clearMain()
+{
+	ReactDOM.render(<div />, document.getElementById('main'));
 }
 
 function addRecipeToWunderlist(recipeId)
