@@ -1,7 +1,7 @@
 var Promise = require('bluebird');
 var apiLoaded = false;
 
-function loadApi()
+module.exports.loadApi = function()
 {
 	return new Promise(function(resolve, reject)
 	{
@@ -21,11 +21,9 @@ function loadApi()
 
 module.exports.authenticate = function(clientId, scope)
 {
-	return loadApi().then(function()
+	// TODO: Reject if API not loaded.
+	return new Promise(function(resolve, reject)
 	{
-		return new Promise(function(resolve, reject)
-		{
-			gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, resolve);
-		});
+		gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, resolve);
 	});
 }

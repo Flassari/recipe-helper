@@ -4,7 +4,7 @@
   "description": "Import google doc recipes to wunderlist shopping list.",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --optimize-minimize",
     "dev": "webpack-dev-server --port 3000 --devtool eval --progress --colors --content-base build"
   },
   "repository": {

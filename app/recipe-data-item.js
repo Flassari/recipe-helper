@@ -1,6 +1,3 @@
-var quantities;
-var name;
-
 var RecipeItem = module.exports = function RecipeItem(str)
 {
 	this.quantities = {};

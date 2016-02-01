@@ -95,7 +95,15 @@ function authenticate()
 		return Promise.resolve(googleAccessToken);
 	}
 
-	return authenticator.authenticate(googleClientId, scope)
+	return authenticator.loadApi().then(function() {
+		return new Promise(function(resolve, reject) {
+			ReactDOM.render(<button type="button" onClick={resolve} >Log into google</button>, document.getElementById('main'));
+		});
+	})
+	.then(function() {
+		clearMain();
+		return authenticator.authenticate(googleClientId, scope);
+	})
 	.then(function(authResult) {
 		if (authResult && !authResult.error)
 		{
