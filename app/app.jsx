@@ -58,6 +58,10 @@ function downloadAndCacheRecipes()
 {
 	return authenticate()
 	.then(getDriveFileId)
+	.then(function(fileId) {
+		ReactDOM.render(<div>Loading recipes...</div>, document.getElementById('main'));
+		return fileId;
+	})
 	.then(function(fileId) { 
 		return downloader.download(fileId, googleAccessToken);
 	})
