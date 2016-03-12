@@ -1,44 +1,45 @@
-var Promise = require('bluebird');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var RecipeList = require('./components/RecipeList.jsx');
-var ListChooser = require('./components/ListChooser.jsx');
+import Promise from 'bluebird';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-var authenticator = require('./authenticator.js');
-var filePicker = require('./drive-picker.js');
-var downloader = require('./drive-document-downloader.js');
-var recipeManager = require('./recipe-manager.js');
+import RecipeList from './components/RecipeList';
+import ListChooser from './components/ListChooser';
 
-var wunderlist = require('./wunderlist.js');;
-var parser = require('./recipe-parser.js');
+import * as authenticator from './authenticator';
+import * as filePicker from './drive-picker';
+import * as downloader from './drive-document-downloader';
+import * as wunderlist from './wunderlist';
+
+import recipeManager from './recipe-manager';
+import parser from './recipe-parser';
 
 // --- Generate these yourself if forking this project ---
-var wunderlistClientId = '950a881bc370b266e57d';
-var googleDeveloperKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
-var googleClientId = '866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com';
+let wunderlistClientId = '950a881bc370b266e57d';
+let googleDeveloperKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
+let googleClientId = '866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com';
 // See wunderlist_token_exchanger.php for example implementation of token.php, you'll need to host this yourself.
-var wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
+let wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 
 // Scope for readonly access.
-var scope = ['https://www.googleapis.com/auth/drive.readonly'];
+let scope = ['https://www.googleapis.com/auth/drive.readonly'];
 
-var googleAccessToken;
-var wunderlistAccessToken;
-var shoppingListId;
+let googleAccessToken;
+let wunderlistAccessToken;
+let shoppingListId;
 
-window.onApiLoaded = function()
+window.onApiLoaded = () =>
 {
 	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
-	.then(function(accessToken) {
+	.then((accessToken) => {
 		wunderlistAccessToken = accessToken;
 	})
 	.then(getShoppingList)
-	.then(function(listId) {
+	.then((listId) => {
 		shoppingListId = parseInt(listId);
 	})
 	.then(clearMain)
 	.then(getRecipes)
-	.then(function(recipes) {
+	.then((recipes) => {
 		recipeManager.setRecipes(recipes);
 		return recipes;
 	})
@@ -58,15 +59,15 @@ function downloadAndCacheRecipes()
 {
 	return authenticate()
 	.then(getDriveFileId)
-	.then(function(fileId) {
+	.then((fileId) => {
 		ReactDOM.render(<div>Loading recipes...</div>, document.getElementById('main'));
 		return fileId;
 	})
-	.then(function(fileId) { 
+	.then((fileId) => { 
 		return downloader.download(fileId, googleAccessToken);
 	})
-	.then(function(fileContent) {
-		var recipes = parser.parse(fileContent);
+	.then((fileContent) => {
+		let recipes = parser.parse(fileContent);
 		localStorage.recipes = JSON.stringify(recipes); // Store on device
 		return recipes;
 	});
@@ -86,7 +87,7 @@ function pickDriveFile()
 {
 	// Returns fileID string.
 	return filePicker.pick(googleAccessToken, googleDeveloperKey)
-	.then(function(fileId) {
+	.then((fileId) => {
 		localStorage.fileId = fileId;
 		return fileId;
 	});
@@ -99,16 +100,16 @@ function authenticate()
 		return Promise.resolve(googleAccessToken);
 	}
 
-	return authenticator.loadApi().then(function() {
-		return new Promise(function(resolve, reject) {
+	return authenticator.loadApi().then(() => {
+		return new Promise((resolve, reject) => {
 			ReactDOM.render(<button type="button" onClick={resolve} >Log into google</button>, document.getElementById('main'));
 		});
 	})
-	.then(function() {
+	.then(() => {
 		clearMain();
 		return authenticator.authenticate(googleClientId, scope);
 	})
-	.then(function(authResult) {
+	.then((authResult) => {
 		if (authResult && !authResult.error)
 		{
 			googleAccessToken = authResult.access_token;
@@ -126,11 +127,11 @@ function getShoppingList()
 	}
 
 	return wunderlist.getLists(wunderlistClientId, wunderlistAccessToken)
-	.then(function(lists) {
-		return new Promise(function( resolve, reject) {
+	.then((lists) => {
+		return new Promise((resolve, reject) => {
 			ReactDOM.render(<ListChooser lists={lists} done={resolve}/>, document.getElementById('main'));
 		});
-	}).then(function(listId) {
+	}).then((listId) => {
 		localStorage.shoppingList = listId;
 		return listId;
 	});
@@ -143,8 +144,7 @@ function showRecipes(recipes)
 			<button type="button" onClick={refreshRecipes} >Refresh recipes</button>
 			<RecipeList recipes={recipes} clicked={addRecipeToWunderlist} />
 		</div>
-	,document.getElementById('main'));
-
+	, document.getElementById('main'));
 }
 
 function refreshRecipes()
@@ -164,10 +164,10 @@ function addRecipeToWunderlist(recipeId)
 	recipeManager.setRecipeInProgress(recipeId, true);
 	console.log("Adding recipe.");
 
-	var recipe = recipeManager.recipesById[recipeId];
+	let recipe = recipeManager.recipesById[recipeId];
 
 	wunderlist.addItems(shoppingListId, recipe.ingredients, wunderlistClientId, wunderlistAccessToken)
-	.then(function() {
+	.then(() => {
 		console.log("Recipe added.");
 		recipeManager.setRecipeInProgress(recipeId, false);
 	});
