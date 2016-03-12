@@ -23,6 +23,6 @@ module.exports = {
 	},
 
     resolve: {
-        extentions: ['js', 'jsx', 'scss']
+        extensions: ['', '.js', '.jsx', '.scss']
     }
 };
