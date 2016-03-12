@@ -1,32 +1,38 @@
-var React = require('react');
-var recipeManager = require('../recipe-manager.js');
+import React from 'react';
+import recipeManager from '../recipe-manager';
 
-
-module.exports = React.createClass(
+export default class Recipe extends React.Component
 {
-	getInitialState: function() {
-		return {inProgress: false};
-	},
-	handleClick: function (e)
+	constructor(props)
+	{
+		super(props);
+		this.state =  { inProgress: false };
+	}
+	
+	handleClick(e)
 	{
 		this.setState({inProgress: true});
 		this.props.clicked(this.props.id);
-	},
-	componentWillMount: function()
+	}
+	
+	componentWillMount()
 	{
-		recipeManager.setListenerForRecipe(this.props.id, this.recipeStateUpdated);
-	},
-	recipeStateUpdated: function(recipe)
+		recipeManager.setListenerForRecipe(this.props.id, this.recipeStateUpdated.bind(this));
+	}
+	
+	recipeStateUpdated(recipe)
 	{
 		this.setState({inProgress: recipe.inProgress});
-	},
-	componentWillUnmount: function()
+	}
+	
+	componentWillUnmount()
 	{
 		recipeManager.setListenerForRecipe(this.props.id, null);
-	},
-	render: function()
+	}
+	
+	render()
 	{
-		var styles = {
+		let styles = {
 			recipe: {
 				width: 130,
 				height: 170,
@@ -47,8 +53,8 @@ module.exports = React.createClass(
 			<div style={styles.recipe}>
 				<img style={styles.image} src={this.props.img} />
 				<div>{this.props.name}</div>
-				<button type="button" onClick={this.handleClick} disabled={this.state.inProgress == true} >Add</button>
+				<button type="button" onClick={this.handleClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
 			</div>
 		)
 	}
-});
+}
