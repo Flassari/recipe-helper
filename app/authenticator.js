@@ -1,9 +1,10 @@
-var Promise = require('bluebird');
-var apiLoaded = false;
+import Promise from 'bluebird';
 
-module.exports.loadApi = function()
+let apiLoaded = false;
+
+export function loadApi()
 {
-	return new Promise(function(resolve, reject)
+	return new Promise((resolve, reject) =>
 	{
 		if (apiLoaded)
 		{
@@ -11,7 +12,7 @@ module.exports.loadApi = function()
 		}
 		else
 		{
-			gapi.load('auth', {'callback': function() {
+			gapi.load('auth', {'callback': () => {
 				apiLoaded = true;
 				resolve();
 			}});
@@ -19,10 +20,10 @@ module.exports.loadApi = function()
 	});
 }
 
-module.exports.authenticate = function(clientId, scope)
+export function authenticate(clientId, scope)
 {
 	// TODO: Reject if API not loaded.
-	return new Promise(function(resolve, reject)
+	return new Promise((resolve, reject) =>
 	{
 		gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, resolve);
 	});

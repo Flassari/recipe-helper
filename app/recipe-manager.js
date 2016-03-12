@@ -1,41 +1,43 @@
-var RecipeManager = function()
+class RecipeManager
 {
-	this.listeners = {};
-	this.recipesById = null;
-}
-
-RecipeManager.prototype.setRecipes = function(recipes)
-{
-	this.recipes = recipes;
-	this.recipesById = {};
-
-	for(var recipeCategory in recipes)
+	constructor()
 	{
-		var recipesInCategory = recipes[recipeCategory];
+		this.listeners = {};
+		this.recipesById = null;
+	}
+	
+	setRecipes(recipes)
+	{
+		this.recipes = recipes;
+		this.recipesById = {};
 
-		for (var i = 0; i < recipesInCategory.length; i++)
+		for(let recipeCategory in recipes)
 		{
-			var recipe = recipesInCategory[i];
-			this.recipesById[recipe.id] = recipe;
+			let recipesInCategory = recipes[recipeCategory];
+
+			for (let i = 0; i < recipesInCategory.length; i++)
+			{
+				let recipe = recipesInCategory[i];
+				this.recipesById[recipe.id] = recipe;
+			}
 		}
 	}
-}
-
-RecipeManager.prototype.setRecipeInProgress = function(recipeId, inProgress)
-{
-	var recipe = this.recipesById[recipeId];
-	recipe.inProgress = inProgress;
-
-	if (this.listeners[recipeId])
+	
+	setRecipeInProgress(recipeId, inProgress)
 	{
-		this.listeners[recipeId](recipe);
+		let recipe = this.recipesById[recipeId];
+		recipe.inProgress = inProgress;
+
+		if (this.listeners[recipeId])
+		{
+			this.listeners[recipeId](recipe);
+		}
+	}
+
+	setListenerForRecipe(recipeId, fn)
+	{
+		this.listeners[recipeId] = fn;
 	}
 }
 
-RecipeManager.prototype.setListenerForRecipe = function(recipeId, fn)
-{
-	this.listeners[recipeId] = fn;
-}
-
-// Singleton
-module.exports = new RecipeManager();
+export default new RecipeManager();

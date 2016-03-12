@@ -1,37 +1,17 @@
-function getNestedImage(node)
+export default function (fileContent)
 {
-	if (node.nodeName === "IMG")
+	let xmlDoc = $.parseHTML( fileContent );
+
+	let currentRecipe = null;
+	let recipesByCategory = { };
+	let currentCategory = recipesByCategory['Default'] = [];
+	let totalRecipeCount = 0;
+
+	let imgUrl;
+
+	for (let i = 0; i < xmlDoc.length; i++)
 	{
-		return node.src;
-	}
-	else
-	{
-		for (var i = 0; i < node.children.length; i++)
-		{
-			var childImg = getNestedImage(node.children[i]);
-			if (childImg !== null)
-			{
-				return childImg;
-			}
-		}
-	}
-	return null;
-}
-
-module.exports.parse = function(fileContent)
-{
-	var xmlDoc = $.parseHTML( fileContent );
-
-	var currentRecipe = null;
-	var recipesByCategory = { };
-	var currentCategory = recipesByCategory['Default'] = [];
-	var totalRecipeCount = 0;
-
-	var imgUrl;
-
-	for (var i = 0; i < xmlDoc.length; i++)
-	{
-		var node = xmlDoc[i];
+		let node = xmlDoc[i];
 		if (node.nodeName === "H1") // New recipe category
 		{
 			currentCategory = recipesByCategory[node.innerText] = [];
@@ -51,7 +31,7 @@ module.exports.parse = function(fileContent)
 		{
 			if (currentRecipe !== null)
 			{
-				for (var j = 0; j < node.children.length; j++)
+				for (let j = 0; j < node.children.length; j++)
 				{
 					currentRecipe.ingredients.push(node.children[j].innerText);
 				}
@@ -72,4 +52,24 @@ module.exports.parse = function(fileContent)
 	}
 
 	return recipesByCategory;
+}
+
+function getNestedImage(node)
+{
+	if (node.nodeName === "IMG")
+	{
+		return node.src;
+	}
+	else
+	{
+		for (let i = 0; i < node.children.length; i++)
+		{
+			let childImg = getNestedImage(node.children[i]);
+			if (childImg !== null)
+			{
+				return childImg;
+			}
+		}
+	}
+	return null;
 }

@@ -1,11 +1,33 @@
-var Promise = require('bluebird');
+import Promise from 'bluebird';
 
-var apiLoaded = false;
-var picker = null;
+let apiLoaded = false;
+let picker = null;
+
+export function pick(oauthToken, developerKey)
+{
+	return loadApi()
+	.then(() => { createPicker(oauthToken, developerKey)})
+	.then(() =>
+	{
+		return new Promise((resolve, reject) =>
+		{
+			picker.setVisible(true);
+			picker.setCallback((data) =>
+			{
+				if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED)
+				{
+					let doc = data[google.picker.Response.DOCUMENTS][0];
+					let fileId = doc[google.picker.Document.ID];
+					resolve(fileId);
+				}
+			});
+		});
+	});
+}
 
 function loadApi()
 {
-	return new Promise(function(resolve, reject)
+	return new Promise((resolve, reject) =>
 	{
 		if (apiLoaded)
 		{
@@ -13,33 +35,11 @@ function loadApi()
 		}
 		else
 		{
-			gapi.load('picker', {'callback': function() {
+			gapi.load('picker', {'callback': () => {
 				apiLoaded = true;
 				resolve();
 			}});
 		}
-	});
-}
-
-module.exports.pick = function pick(oauthToken, developerKey)
-{
-	return loadApi()
-	.then(function() { createPicker(oauthToken, developerKey)})
-	.then(function()
-	{
-		return new Promise(function(resolve, reject)
-		{
-			picker.setVisible(true);
-			picker.setCallback(function(data)
-			{
-				if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED)
-				{
-					var doc = data[google.picker.Response.DOCUMENTS][0];
-					var fileId = doc[google.picker.Document.ID];
-					resolve(fileId);
-				}
-			});
-		});
 	});
 }
 

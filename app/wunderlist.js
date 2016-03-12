@@ -1,41 +1,27 @@
-var Promise = require('bluebird');
-var RecipeItem = require('./recipe-data-item.js');
-var wurl = require('wurl');
+import Promise from 'bluebird';
+import RecipeItem from './recipe-data-item.js';
+import wurl from 'wurl';
 
-
-module.exports.logIn = function(clientId, tokenExchangerUrl)
+export function logIn(clientId, tokenExchangerUrl)
 {
 	if (localStorage.wunderlistAccessToken)
 	{
 		return Promise.resolve(localStorage.wunderlistAccessToken);
 	}
 
-	var code = wurl('?code');
+	let code = wurl('?code');
 	if (code) // User just returned from wunderlist auth page.
 	{
 		return getAuthToken(code, tokenExchangerUrl)
 	}
 
 	// Not logged in and not redirected from oauth page, redirect to log in page.
-	var path = 'https://www.wunderlist.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + window.location.href  + '&state=' + Math.random().toString(36);
+	let path = 'https://www.wunderlist.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + window.location.href  + '&state=' + Math.random().toString(36);
 	window.location.href = path;
 	return null;
 }
-
-function getAuthToken(code, tokenExchangerUrl)
-{
-	return Promise.resolve($.ajax({
-		url: tokenExchangerUrl,
-		type : 'POST',
-		data: 'code=' + code
-	}).then(function(response) {
-		var token = response.access_token;
-		localStorage.wunderlistAccessToken = token;
-		return token;
-	}));
-}
-
-module.exports.getLists = function(clientId, accessToken)
+	
+export function getLists(clientId, accessToken)
 {
 	return Promise.resolve($.ajax({
 		url: 'https://a.wunderlist.com/api/v1/lists',
@@ -46,27 +32,27 @@ module.exports.getLists = function(clientId, accessToken)
 		}
 	}));
 }
-
-module.exports.addItems = function(listId, items, clientId, accessToken)
+	
+export function addItems(listId, items, clientId, accessToken)
 {
 	if (items.length == 0) return Promise.resolve();
 
-	var nonAddedItems = {};
+	let nonAddedItems = {};
 
-	$.each(items, function(i, recipeItemString)
+	$.each(items, (i, recipeItemString) =>
 	{
-		var recipeItem = new RecipeItem(recipeItemString);
+		let recipeItem = new RecipeItem(recipeItemString);
 		nonAddedItems[recipeItem.name] = recipeItem;
 	});
 
 	return getCurrentShoppingList(listId, clientId, accessToken)
-	.done(function(shoppingListItems)
+	.done((shoppingListItems) =>
 	{
-		var requests = [];
+		let requests = [];
 
-		$.each(shoppingListItems, function(i, shoppingListItem)
+		$.each(shoppingListItems, (i, shoppingListItem) =>
 		{
-			var shoppingListRecipeItem = new RecipeItem(shoppingListItem.title);
+			let shoppingListRecipeItem = new RecipeItem(shoppingListItem.title);
 
 			if (nonAddedItems[shoppingListRecipeItem.name] != undefined)
 			{
@@ -78,13 +64,26 @@ module.exports.addItems = function(listId, items, clientId, accessToken)
 		});
 
 		// Create new tasks for the ones that weren't updated
-		$.each(nonAddedItems, function(nonAddedItemName, nonAddedItem)
+		$.each(nonAddedItems, (nonAddedItemName, nonAddedItem) =>
 		{
 			requests.push(newShoppingListItem(nonAddedItem.getString(), listId, clientId, accessToken));
 		});
 
 		return Promise.all(requests)
 	});
+}
+
+function getAuthToken(code, tokenExchangerUrl)
+{
+	return Promise.resolve($.ajax({
+		url: tokenExchangerUrl,
+		type : 'POST',
+		data: 'code=' + code
+	}).then((response) => {
+		let token = response.access_token;
+		localStorage.wunderlistAccessToken = token;
+		return token;
+	}));
 }
 
 function getCurrentShoppingList(listId, clientId, accessToken)
@@ -116,7 +115,6 @@ function changeShoppingListItem(taskId, taskRevision, newTitle, clientId, access
 	});
 }
 
-
 function newShoppingListItem(newTitle, listId, clientId, accessToken)
 {
 	return $.ajax({
@@ -133,4 +131,3 @@ function newShoppingListItem(newTitle, listId, clientId, accessToken)
 		})
 	});
 }
-

@@ -1,28 +1,34 @@
-var React = require('react');
+import React from 'react';
 
-var ListItem = React.createClass(
+export default class extends React.Component
 {
-	handleClick: function (e)
+	constructor(props)
 	{
-		this.props.done(parseInt(this.props.id));
-	},
-	render: function()
-	{
-		return (<button type="button" onClick={this.handleClick}>{this.props.title}</button>);
+		super(props);
 	}
-});
-
-module.exports = React.createClass(
-{
-	render: function()
+	
+	render()
 	{
-		var done = this.props.done;
+		let done = this.props.done;
 		return (
 			<div>
-				{this.props.lists.map(function(list) {
+				{this.props.lists.map((list) => {
 					return <ListItem {...list} done={done} />;
 				})}
 			</div>
 		);
 	}
-});
+}
+
+class ListItem extends React.Component
+{
+	handleClick (e)
+	{
+		this.props.done(parseInt(this.props.id));
+	}
+	
+	render()
+	{
+		return (<button type="button" onClick={this.handleClick.bind(this)}>{this.props.title}</button>);
+	}
+}

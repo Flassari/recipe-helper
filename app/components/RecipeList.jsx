@@ -1,19 +1,19 @@
-var React = require('react');
-var Recipe = require('./recipe.jsx');
+import React from 'react';
+import Recipe from './recipe.jsx';
 
-module.exports = React.createClass(
+export default class RecipeList extends React.Component
 {
-	render: function()
+	render()
 	{
-		var children = [];
+		let children = [];
 		for (var recipeCategory in this.props.recipes)
 		{
-			var recipes = this.props.recipes[recipeCategory];
-			for (var i = 0; i < recipes.length; i++)
+			let recipes = this.props.recipes[recipeCategory];
+			for (let i = 0; i < recipes.length; i++)
 			{
 				children.push(<Recipe key={recipes[i].id} clicked={this.props.clicked} {...recipes[i]}/>);
 			}
 		}
 		return (<div>{children}</div>);
 	}
-});
+}

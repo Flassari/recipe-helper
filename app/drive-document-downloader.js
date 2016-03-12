@@ -1,9 +1,10 @@
-var Promise = require('bluebird');
-var apiLoaded = false;
+import Promise from 'bluebird';
 
-function loadApi()
+let apiLoaded = false;
+
+export function loadApi()
 {
-	return new Promise(function(resolve, reject)
+	return new Promise((resolve, reject) =>
 	{
 		if (apiLoaded)
 		{
@@ -11,7 +12,7 @@ function loadApi()
 		}
 		else
 		{
-			gapi.client.load('drive', 'v2', function() {
+			gapi.client.load('drive', 'v2', () => {
 				apiLoaded = true;
 				resolve();
 			});
@@ -19,19 +20,19 @@ function loadApi()
 	});
 }
 
-module.exports.download = function download(fileId, accessToken)
+export function download(fileId, accessToken)
 {
 	return loadApi()
-	.then(function() { return downloadFileInfo(fileId, accessToken) })
-	.then(function(fileInfo) {
+	.then(() => { return downloadFileInfo(fileId, accessToken) })
+	.then((fileInfo) => {
 		return $.ajax({ url: fileInfo.exportLinks['text/html'], headers: {'Authorization': 'Bearer ' + accessToken}});
 	});
 }
 
 function downloadFileInfo(fileId, accessToken)
 {
-	return new Promise(function (resolve, reject) {
-		var request = gapi.client.drive.files.get({ 'fileId': fileId });
+	return new Promise((resolve, reject) => {
+		let request = gapi.client.drive.files.get({ 'fileId': fileId });
 		request.execute(resolve);
 	});
 }
