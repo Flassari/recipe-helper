@@ -55,9 +55,9 @@ export function parse(fileContent)
 }
 
 function parseHTML(str) {
-  var tmp = document.implementation.createHTMLDocument();
-  tmp.body.innerHTML = str;
-  return tmp.body.children;
+	var tmp = document.implementation.createHTMLDocument();
+	tmp.body.innerHTML = str;
+	return tmp.body.children;
 };
 
 function getNestedImage(node)

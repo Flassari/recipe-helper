@@ -91,9 +91,9 @@ function getCurrentShoppingList(listId, clientId, accessToken)
 	return $.ajax({
 		url: "https://a.wunderlist.com/api/v1/tasks",
 		headers : {
-            'X-Client-ID': clientId,
+			'X-Client-ID': clientId,
 			'X-Access-Token': accessToken
-        },
+		},
 		data: {list_id: listId}
 	});
 }
@@ -104,10 +104,10 @@ function changeShoppingListItem(taskId, taskRevision, newTitle, clientId, access
 		url: "https://a.wunderlist.com/api/v1/tasks/" + taskId,
 		type : "PATCH",
 		headers : {
-            "Content-Type" : "application/json",
-            'X-Client-ID': clientId,
+			"Content-Type" : "application/json",
+			'X-Client-ID': clientId,
 			'X-Access-Token': accessToken
-        },
+		},
 		data: JSON.stringify({
 			revision: taskRevision,
 			title: newTitle
@@ -121,10 +121,10 @@ function newShoppingListItem(newTitle, listId, clientId, accessToken)
 		url: "https://a.wunderlist.com/api/v1/tasks",
 		type : "POST",
 		headers : {
-            "Content-Type" : "application/json",
-            'X-Client-ID': clientId,
+			"Content-Type" : "application/json",
+			'X-Client-ID': clientId,
 			'X-Access-Token': accessToken
-        },
+		},
 		data: JSON.stringify({
 			list_id: listId,
 			title: newTitle
