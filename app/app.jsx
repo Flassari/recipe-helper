@@ -151,6 +151,7 @@ function showRecipes(recipes)
 
 function refreshRecipes()
 {
+	localStorage.recipes = '';
 	clearMain();
 	downloadAndCacheRecipes()
 	.then(showRecipes);
