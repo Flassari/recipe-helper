@@ -3,11 +3,11 @@ var node_modules = path.resolve(__dirname, 'node_modules');
 
 module.exports = {
 	entry: [
-		'./app/app.jsx', // Your appʼs entry point,
+		'./app/app.jsx' // Your appʼs entry point,
 	],
 	output: {
 		path: path.resolve(__dirname, 'build'),
-		filename: 'bundle.js',
+		filename: 'bundle.js'
 	},
 	module: {
 		loaders: [{
@@ -15,10 +15,10 @@ module.exports = {
 			loaders: [/*'react-hot', */'babel']
 		},
 		{
-			test: /\.css$/, // Only .css files
-			loader: 'style!css' // Run both loaders
+			test: /\.scss$/,
+			loaders: ["style", "css?sourceMap", "sass?sourceMap"]
 		}],
-
+		
 		noParse: /\.min\.js/
 	},
 
