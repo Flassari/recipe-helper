@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --optimize-minimize",
-    "dev": "webpack-dev-server --port 3000 --devtool eval --progress --colors --content-base build"
+    "dev": "webpack-dev-server --port 3000 --host 0.0.0.0 --devtool eval --progress --colors --content-base build"
   },
   "repository": {
     "type": "git",
