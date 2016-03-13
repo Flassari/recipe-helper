@@ -50,7 +50,15 @@ export function parse(fileContent)
 			}
 		}
 	}
-
+	
+	// Sort recipes alphabetically 
+	for (let categoryName in recipesByCategory)
+	{
+		recipesByCategory[categoryName].sort((a, b) => {
+			return a.name.localeCompare(b.name); 
+		});
+	}
+	
 	return recipesByCategory;
 }
 
