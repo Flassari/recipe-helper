@@ -1,4 +1,4 @@
-export default function (fileContent)
+export function parse(fileContent)
 {
 	let xmlDoc = parseHTML(fileContent);
 

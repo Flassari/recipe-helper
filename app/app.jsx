@@ -9,9 +9,10 @@ import * as authenticator from './authenticator';
 import * as filePicker from './drive-picker';
 import * as downloader from './drive-document-downloader';
 import * as wunderlist from './wunderlist';
+import * as recipeParser from './recipe-parser';
 
 import recipeManager from './recipe-manager';
-import parser from './recipe-parser';
+
 
 // --- Generate these yourself if forking this project ---
 let wunderlistClientId = '950a881bc370b266e57d';
@@ -67,7 +68,7 @@ function downloadAndCacheRecipes()
 		return downloader.download(fileId, googleAccessToken);
 	})
 	.then((fileContent) => {
-		let recipes = parser.parse(fileContent);
+		let recipes = recipeParser.parse(fileContent);
 		localStorage.recipes = JSON.stringify(recipes); // Store on device
 		return recipes;
 	});
