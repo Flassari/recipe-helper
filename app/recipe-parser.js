@@ -22,31 +22,41 @@ export function parse(fileContent)
 			currentRecipe = {
 				name: node.innerText,
 				ingredients: [],
-				id: totalRecipeCount
+				id: totalRecipeCount,
+				nodes: []
 			};
 			totalRecipeCount++;
 			currentCategory.push(currentRecipe);
+		}
+		else if (node.nodeName.substr(0, 1) === "H" && node.nodeName.length == 2) // Other
+		{
+			// Other header we don't care about, stop current recipe and ignore all until new recipe.
+			currentRecipe = null;
 		}
 		else if (node.nodeName === "UL") // Recipe ingredients
 		{
 			if (currentRecipe !== null)
 			{
+				currentRecipe.nodes.push(node.outerHTML);
+				
 				for (let j = 0; j < node.children.length; j++)
 				{
 					currentRecipe.ingredients.push(node.children[j].innerText);
 				}
 			}
 		}
-		else if (node.nodeName.substr(0, 1) === "H" && node.nodeName.length == 2)
-		{
-			// Other header we don't care about, ignore.
-			currentRecipe = null;
-		}
-		else if ((imgUrl = getNestedImage(node)) !== null)
+		else if ((imgUrl = getNestedImage(node)) !== null) // Recipe image
 		{
 			if (currentRecipe !== null)
 			{
 				currentRecipe.img = imgUrl;
+			}
+		}
+		else // Recipe instructions
+		{
+			if (currentRecipe !== null)
+			{
+				currentRecipe.nodes.push(node.outerHTML);
 			}
 		}
 	}
@@ -63,10 +73,10 @@ export function parse(fileContent)
 }
 
 function parseHTML(str) {
-	var tmp = document.implementation.createHTMLDocument();
-	tmp.body.innerHTML = str;
-	return tmp.body.children;
-};
+	let htmlDoc = document.implementation.createHTMLDocument();
+	htmlDoc.body.innerHTML = str;
+	return htmlDoc.body.children;
+}
 
 function getNestedImage(node)
 {

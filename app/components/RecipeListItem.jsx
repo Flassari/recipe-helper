@@ -9,10 +9,15 @@ export default class Recipe extends React.Component
 		this.state =  { inProgress: false };
 	}
 	
-	handleClick(e)
+	onAddClick(e)
 	{
 		this.setState({inProgress: true});
-		this.props.clicked(this.props.id);
+		this.props.onAdd(this.props.id);
+	}
+	
+	onInfoClick(e)
+	{
+		this.props.onInfo(this.props.id);
 	}
 	
 	componentWillMount()
@@ -32,28 +37,11 @@ export default class Recipe extends React.Component
 	
 	render()
 	{
-		let styles = {
-			recipe: {
-				width: 130,
-				height: 170,
-				background: '#ddd',
-				textAlign: 'center',
-				margin: '5px 5px',
-				float: 'left',
-			},
-			image: {
-				marginTop: 15,
-				width: 100,
-				height: 100,
-				background: '#ccc',
-			},
-		};
-
 		return (
-			<div style={styles.recipe}>
-				<img style={styles.image} src={this.props.img} />
+			<div className="recipe">
+				<img src={this.props.img} onClick={this.onInfoClick.bind(this)}/>
 				<div>{this.props.name}</div>
-				<button type="button" onClick={this.handleClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
+				<button type="button" onClick={this.onAddClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
 			</div>
 		)
 	}

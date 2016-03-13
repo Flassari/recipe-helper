@@ -1,3 +1,5 @@
+import './app.scss'; // Style
+
 import Promise from 'bluebird';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -12,7 +14,6 @@ import * as wunderlist from './wunderlist';
 import * as recipeParser from './recipe-parser';
 
 import recipeManager from './recipe-manager';
-
 
 // --- Generate these yourself if forking this project ---
 let wunderlistClientId = '950a881bc370b266e57d';
@@ -143,7 +144,7 @@ function showRecipes(recipes)
 	ReactDOM.render(
 		<div>
 			<button type="button" onClick={refreshRecipes} >Refresh recipes</button>
-			<RecipeList recipes={recipes} clicked={addRecipeToWunderlist} />
+			<RecipeList recipes={recipes} onAdd={addRecipeToWunderlist.bind(this)} />
 		</div>
 	, document.getElementById('main'));
 }
