@@ -1,6 +1,6 @@
 export default function (fileContent)
 {
-	let xmlDoc = $.parseHTML( fileContent );
+	let xmlDoc = parseHTML(fileContent);
 
 	let currentRecipe = null;
 	let recipesByCategory = { };
@@ -53,6 +53,12 @@ export default function (fileContent)
 
 	return recipesByCategory;
 }
+
+function parseHTML(str) {
+  var tmp = document.implementation.createHTMLDocument();
+  tmp.body.innerHTML = str;
+  return tmp.body.children;
+};
 
 function getNestedImage(node)
 {
