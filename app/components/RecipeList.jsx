@@ -31,7 +31,7 @@ export default class RecipeList extends React.Component
 				children.push(<RecipeListItem key={recipes[i].id} onAdd={this.props.onAdd} onInfo={this.onInfo.bind(this)} {...recipes[i]}/>);
 			}
 		}
-		return <div>{children}</div>;
+		return <div className="recipeList">{children}</div>;
 	}
 	
 	renderRecipeInfo()

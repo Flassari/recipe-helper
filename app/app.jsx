@@ -1,4 +1,4 @@
-import './app.scss'; // Style
+import './style.scss'; // Style
 
 import Promise from 'bluebird';
 import React from 'react';
