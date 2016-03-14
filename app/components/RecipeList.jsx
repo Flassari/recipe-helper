@@ -1,5 +1,5 @@
 import React from 'react';
-import RecipeListItem from './RecipeListItem';
+import RecipeCategory from './RecipeCategory';
 import RecipeInfo from './RecipeInfo';
 
 import recipeManager from '../recipe-manager';
@@ -23,12 +23,12 @@ export default class RecipeList extends React.Component
 	renderRecipeList()
 	{
 		let children = [];
-		for (var recipeCategory in this.props.recipes)
+		for (let recipeCategory in this.props.recipes)
 		{
 			let recipes = this.props.recipes[recipeCategory];
-			for (let i = 0; i < recipes.length; i++)
+			if (recipes.length > 0)
 			{
-				children.push(<RecipeListItem key={recipes[i].id} onAdd={this.props.onAdd} onInfo={this.onInfo.bind(this)} {...recipes[i]}/>);
+				children.push(<RecipeCategory key={recipeCategory} categoryName={recipeCategory} recipes={recipes} onInfo={this.onInfo.bind(this)} onAdd={this.props.onAdd}/>);
 			}
 		}
 		return <div className="recipeList">{children}</div>;

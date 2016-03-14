@@ -1,7 +1,7 @@
 import React from 'react';
 import recipeManager from '../recipe-manager';
 
-export default class Recipe extends React.Component
+export default class extends React.Component
 {
 	constructor(props)
 	{

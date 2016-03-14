@@ -4,11 +4,16 @@ body {
 	font-family: Arial;
 }
 
-.recipeList
+.recipeCategory
 {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-around;
+	h1 {
+		margin: 10px 0 0px 6px;	
+	}
+	
+	.recipes {
+		display: flex;
+		flex-wrap: wrap;
+	}
 }
 
 .recipeListItem {
