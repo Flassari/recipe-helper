@@ -42,8 +42,9 @@ export default class extends React.Component
 		}
 		return (
 			<div className="recipeListItem">
-				<div className="image" style={imageInlineStyle} onClick={this.onInfoClick.bind(this)}></div>
-				<div className="name">{this.props.name}</div>
+				<div className="image" style={imageInlineStyle} onClick={this.onInfoClick.bind(this)}>
+					<div className="name">{this.props.name}</div>
+				</div>
 				<button type="button" className="add" onClick={this.onAddClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
 			</div>
 		)

@@ -19,7 +19,7 @@ body {
 .recipeListItem {
 	min-width: 164px;
 	max-width: 220px;
-	height: 210px;
+	height: 200px;
 	flex: 1;
 	background: $recipeBackgroundColor;
 	text-align: center;
@@ -29,23 +29,29 @@ body {
 	overflow: hidden;
 	
 	.image {
+		position: relative;
 		width: 100%;
-		height: 130px;
+		height: 160px;
 		background: #ccc;
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
 		border-radius: 6px 6px 0 0;
-	}
-	
-	.name {
-		font-size: 15px;
-		padding: 0;
-		margin: 0;
-		height: 40px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		
+		.name {
+			font-size: 15px;
+			width: 100%;
+			height: 36px;
+			padding: 5px 0;
+			margin: 0;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: absolute;
+			bottom: 0;
+			background: rgba(255, 255, 255, 0.8);
+		}
 	}
 	
 	.add {
@@ -74,9 +80,9 @@ body {
 		text-align: left;
 		font-size: 15px;
 		padding-left: 10px;
-		background: #ddd;
+		background: #F9F9F9;
 		border: 0;
-		border-bottom: 1px solid #999;
+		border-bottom: 1px solid #D8D8D8;
 		position:fixed;
 		top:0px;
 	}

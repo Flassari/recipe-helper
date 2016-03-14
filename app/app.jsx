@@ -143,8 +143,8 @@ function showRecipes(recipes)
 {
 	ReactDOM.render(
 		<div>
-			<button type="button" onClick={refreshRecipes} >Refresh recipes</button>
 			<RecipeList recipes={recipes} onAdd={addRecipeToWunderlist.bind(this)} />
+			<button type="button" style={{ marginTop: '25px' }} onClick={refreshRecipes} >Refresh recipes</button>
 		</div>
 	, document.getElementById('main'));
 }
