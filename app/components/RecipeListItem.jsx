@@ -1,7 +1,7 @@
 import React from 'react';
 import recipeManager from '../recipe-manager';
 
-export default class Recipe extends React.Component
+export default class extends React.Component
 {
 	constructor(props)
 	{
@@ -37,11 +37,14 @@ export default class Recipe extends React.Component
 	
 	render()
 	{
+		var imageInlineStyle = {
+			backgroundImage: 'url(' + this.props.img + ')'
+		}
 		return (
-			<div className="recipe">
-				<img src={this.props.img} onClick={this.onInfoClick.bind(this)}/>
-				<div>{this.props.name}</div>
-				<button type="button" onClick={this.onAddClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
+			<div className="recipeListItem">
+				<div className="image" style={imageInlineStyle} onClick={this.onInfoClick.bind(this)}></div>
+				<div className="name">{this.props.name}</div>
+				<button type="button" className="add" onClick={this.onAddClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
 			</div>
 		)
 	}
