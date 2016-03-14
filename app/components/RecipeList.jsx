@@ -44,5 +44,6 @@ export default class RecipeList extends React.Component
 	onInfo(recipeId)
 	{
 		this.setState({ showRecipe: recipeManager.recipesById[recipeId] });
+		window.scrollTo(0, 0);
 	}
 }
