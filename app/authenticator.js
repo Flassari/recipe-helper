@@ -22,9 +22,12 @@ export function loadApi()
 
 export function authenticate(clientId, scope)
 {
-	// TODO: Reject if API not loaded.
-	return new Promise((resolve, reject) =>
-	{
-		gapi.auth.authorize({'client_id': clientId, 'scope': scope, 'immediate': false}, resolve);
-	});
+	let authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
+		'response_type=token' +
+		'&prompt=select_account' +
+		'&scope=' + encodeURIComponent(scope) +
+		'&redirect_uri=' + window.location.href +
+		'&client_id=' + clientId;
+	
+	window.location.href = authUrl;
 }
