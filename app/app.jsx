@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV === 'development') {
+	// Reloading of index for development.
+	require('../build/index.html');
+}
+
 import './style.scss'; // Style
 
 import Promise from 'bluebird';

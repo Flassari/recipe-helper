@@ -18,6 +18,10 @@ module.exports = {
 		{
 			test: /\.scss$/,
 			loaders: ['style', 'css?sourceMap', 'postcss-loader', 'sass?sourceMap']
+		},
+		{
+			test: /\.html$/,
+			loader: 'raw-loader'
 		}],
 		
 		noParse: /\.min\.js/
