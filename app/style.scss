@@ -17,10 +17,11 @@ body {
 }
 
 .recipeListItem {
-	min-width: 164px;
+	$minWidth: 164px;
+	min-width: $minWidth;
 	max-width: 220px;
 	height: 200px;
-	flex: 1;
+	flex: 1 0 $minWidth; // Just 'flex: 1' will break wrapping on iOS.
 	background: $recipeBackgroundColor;
 	text-align: center;
 	margin: 4px;
