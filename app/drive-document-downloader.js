@@ -32,6 +32,7 @@ export function download(fileId, accessToken)
 function downloadFileInfo(fileId, accessToken)
 {
 	return new Promise((resolve, reject) => {
+		gapi.auth.setToken({ access_token: accessToken });
 		let request = gapi.client.drive.files.get({ 'fileId': fileId });
 		request.execute(resolve);
 	});
