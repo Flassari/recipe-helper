@@ -28,7 +28,7 @@ let googleClientId = '866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleu
 let wunderlistTokenExchanger = 'http://flassari.is/wunderlist/token.php';
 
 // Scope for readonly access.
-let scope = ['https://www.googleapis.com/auth/drive.readonly'];
+let scope = 'https://www.googleapis.com/auth/drive.readonly';
 
 let googleAccessToken;
 let wunderlistAccessToken;
@@ -56,9 +56,8 @@ window.onApiLoaded = () =>
 function getRecipes()
 {
 	if (localStorage.recipes)
-	{
 		return JSON.parse(localStorage.recipes);
-	}
+	
 	return downloadAndCacheRecipes();
 }
 
@@ -106,23 +105,17 @@ function authenticate()
 	{
 		return Promise.resolve(googleAccessToken);
 	}
-
-	return authenticator.loadApi().then(() => {
-		return new Promise((resolve, reject) => {
-			ReactDOM.render(<button type="button" onClick={resolve} >Log into google</button>, document.getElementById('main'));
-		});
-	})
-	.then(() => {
-		clearMain();
-		return authenticator.authenticate(googleClientId, scope);
-	})
-	.then((authResult) => {
-		if (authResult && !authResult.error)
+	
+	return authenticator.getAccessToken(googleClientId, scope)
+	.then((accessToken) => {
+		if (!accessToken)
 		{
-			googleAccessToken = authResult.access_token;
-			return Promise.resolve(googleAccessToken);
+			ReactDOM.render(<button type="button" onClick={() => { authenticator.authenticate(googleClientId, scope) }} >Log into google</button>, document.getElementById('main'));
+			return new Promise(() => {}); // Wait forever, next step is browser redirect.
 		}
-		return Promise.reject();
+		
+		googleAccessToken = accessToken;
+		return Promise.resolve(accessToken);
 	});
 }
 
