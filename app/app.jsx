@@ -156,6 +156,7 @@ function showRecipes(recipes)
 function refreshRecipes()
 {
 	localStorage.recipes = '';
+	recipeManager.clear();
 	clearMain();
 	downloadAndCacheRecipes()
 	.then(showRecipes);

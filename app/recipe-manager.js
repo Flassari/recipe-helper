@@ -38,6 +38,13 @@ class RecipeManager
 	{
 		this.listeners[recipeId] = fn;
 	}
+	
+	clear()
+	{
+		this.recipes = null;
+		this.recipesById = null;
+		this.listeners = null;
+	}
 }
 
 export default new RecipeManager();
