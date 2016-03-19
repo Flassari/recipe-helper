@@ -30,6 +30,9 @@ export function getAccessToken(clientId, scope)
 	let accessToken = wurl('#access_token');
 	if (!accessToken) return Promise.resolve(null);
 	
+	// Remove junk from url
+	window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+	
 	return validateToken(accessToken, clientId, scope)
 	.then((isValid) => {
 		if (isValid)
