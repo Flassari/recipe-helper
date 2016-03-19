@@ -56,13 +56,15 @@ export function authenticate(clientId, scope)
 
 function validateToken(accessToken, clientId, scope)
 {
-	return Promise.resolve($.ajax({
-		url: 'https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + accessToken
-	}).then((response) => {
+	return Promise.resolve($.ajax({ url: 'https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + accessToken }))
+	.then((response) => {
 		if (response.error) return false;
 		if (response.aud !== clientId) return false;
 		if (response.scope !== scope) return false;
 		
 		return true;
-	}));
+	})
+	.catch(() => {
+		return false;
+	});
 }
