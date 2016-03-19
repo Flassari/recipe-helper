@@ -14,13 +14,13 @@ export function parse(fileContent)
 		let node = xmlDoc[i];
 		if (node.nodeName === "H1") // New recipe category
 		{
-			currentCategory = recipesByCategory[node.innerText] = [];
+			currentCategory = recipesByCategory[node.innerText.trim()] = [];
 			currentRecipe = null;
 		}
 		else if (node.nodeName === "H2") // New recipe
 		{
 			currentRecipe = {
-				name: node.innerText,
+				name: node.innerText.trim(),
 				ingredients: [],
 				id: totalRecipeCount,
 				nodes: []
@@ -41,7 +41,7 @@ export function parse(fileContent)
 				
 				for (let j = 0; j < node.children.length; j++)
 				{
-					currentRecipe.ingredients.push(node.children[j].innerText);
+					currentRecipe.ingredients.push(node.children[j].innerText.trim());
 				}
 			}
 		}

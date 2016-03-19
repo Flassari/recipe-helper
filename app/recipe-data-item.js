@@ -33,7 +33,7 @@ export default class
 
 		if (!otherHasQuantity)
 		{
-			this.quantities[""] = this.quantities[""] ? this.quantities[""] + 1 : 1;
+			this.quantities[""] = this.quantities[""] ? this.quantities[""] + 1 : 2;
 		}
 	}
 	

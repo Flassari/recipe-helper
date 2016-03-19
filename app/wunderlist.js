@@ -42,7 +42,7 @@ export function addItems(listId, items, clientId, accessToken)
 	$.each(items, (i, recipeItemString) =>
 	{
 		let recipeItem = new RecipeItem(recipeItemString);
-		nonAddedItems[recipeItem.name] = recipeItem;
+		nonAddedItems[recipeItem.name.toLocaleLowerCase()] = recipeItem;
 	});
 
 	return getCurrentShoppingList(listId, clientId, accessToken)
@@ -53,12 +53,13 @@ export function addItems(listId, items, clientId, accessToken)
 		$.each(shoppingListItems, (i, shoppingListItem) =>
 		{
 			let shoppingListRecipeItem = new RecipeItem(shoppingListItem.title);
-
-			if (nonAddedItems[shoppingListRecipeItem.name] != undefined)
+			let ingredientNameLowercase = shoppingListRecipeItem.name.toLocaleLowerCase();
+			
+			if (nonAddedItems[ingredientNameLowercase] != undefined)
 			{
 				// The task item is already in the recipe, add the recipe item to it!
-				shoppingListRecipeItem.add(nonAddedItems[shoppingListRecipeItem.name]);
-				delete nonAddedItems[shoppingListRecipeItem.name];
+				shoppingListRecipeItem.add(nonAddedItems[ingredientNameLowercase]);
+				delete nonAddedItems[ingredientNameLowercase];
 				requests.push(changeShoppingListItem(shoppingListItem.id, shoppingListItem.revision, shoppingListRecipeItem.getString(), clientId, accessToken));
 			}
 		});
