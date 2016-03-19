@@ -143,6 +143,7 @@ function showRecipes(recipes)
 		<div>
 			<RecipeList recipes={recipes} onAdd={addRecipeToWunderlist.bind(this)} />
 			<button type="button" style={{ marginTop: '25px' }} onClick={refreshRecipes} >Refresh recipes</button>
+			<button type="button" style={{ marginTop: '25px' }} onClick={logOut}>Log out</button>
 		</div>
 	, document.getElementById('main'));
 }
@@ -153,6 +154,12 @@ function refreshRecipes()
 	clearMain();
 	downloadAndCacheRecipes()
 	.then(showRecipes);
+}
+
+function logOut()
+{
+	localStorage.clear();
+	location.reload();
 }
 
 function clearMain()
