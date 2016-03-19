@@ -48,7 +48,7 @@ export function authenticate(clientId, scope)
 		'&prompt=select_account' +
 		'&state=' + googleAuthState +
 		'&scope=' + encodeURIComponent(scope) +
-		'&redirect_uri=' + window.location.href +
+		'&redirect_uri=' + window.location.origin + window.location.pathname +
 		'&client_id=' + clientId;
 	
 	window.location.href = authUrl;
