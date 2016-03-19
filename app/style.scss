@@ -2,6 +2,37 @@ body {
 	font-family: Arial;
 }
 
+.googleLogin
+{
+	width: 100%;
+	max-width: 500px;
+	margin: 30px auto 0 auto;
+	text-align: center;
+	
+	button {
+		display: block;
+		margin: 20px auto 0 auto;
+		background: no-repeat center top;
+		background-image: url(../images/google_signin.png);
+		width: 191px;
+		height: 46px;
+		border: none;
+		
+		span {
+			display: none;
+		}
+		
+		&:active {
+			background-image: url(../images/google_signin_pressed.png) !important;
+		}
+		
+		&:focus {
+			background-image: url(../images/google_signin_focus.png);
+			outline: 0;
+		}
+	}
+}
+
 .recipeCategory
 {
 	h1 {

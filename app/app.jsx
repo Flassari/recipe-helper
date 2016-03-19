@@ -110,7 +110,12 @@ function authenticate()
 	.then((accessToken) => {
 		if (!accessToken)
 		{
-			ReactDOM.render(<button type="button" onClick={() => { authenticator.authenticate(googleClientId, scope) }} >Log into google</button>, document.getElementById('main'));
+			ReactDOM.render(
+				<div className="googleLogin">
+					Login to Drive and select your recipes document.
+					<button  onClick={() => { authenticator.authenticate(googleClientId, scope) }} ><span>Log into google</span></button>
+				</div>
+			, document.getElementById('main'));
 			return new Promise(() => {}); // Wait forever, next step is browser redirect.
 		}
 		
