@@ -159,6 +159,10 @@ function refreshRecipes()
 	recipeManager.clear();
 	clearMain();
 	downloadAndCacheRecipes()
+	.then((recipes) => {
+		recipeManager.setRecipes(recipes);
+		return recipes;
+	})
 	.then(showRecipes);
 }
 

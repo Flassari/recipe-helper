@@ -1,15 +1,10 @@
 class RecipeManager
 {
-	constructor()
-	{
-		this.listeners = {};
-		this.recipesById = null;
-	}
-	
 	setRecipes(recipes)
 	{
 		this.recipes = recipes;
 		this.recipesById = {};
+		this.listeners = {};
 
 		for(let recipeCategory in recipes)
 		{
@@ -36,6 +31,9 @@ class RecipeManager
 
 	setListenerForRecipe(recipeId, fn)
 	{
+		// If components are removing listeners when we have already cleared
+		if (fn == null && this.listeners == null) return;
+
 		this.listeners[recipeId] = fn;
 	}
 	
