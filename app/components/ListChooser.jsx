@@ -11,10 +11,13 @@ export default class extends React.Component
 	{
 		let done = this.props.done;
 		return (
-			<div>
-				{this.props.lists.map((list) => {
-					return <ListItem {...list} done={done} />;
-				})}
+			<div className="listChooser">
+				<span>Which list should your shopping ingredients be added to?</span>
+				<div className="lists">
+					{this.props.lists.map((list) => {
+						return <ListItem key={list.title} done={done} {...list} />;
+					})}
+				</div>
 			</div>
 		);
 	}

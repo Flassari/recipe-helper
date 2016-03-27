@@ -2,6 +2,24 @@ body {
 	font-family: Arial;
 }
 
+.listChooser {
+	max-width: 500px;
+	width: 100%;
+	margin: 30px auto 0 auto;
+	text-align: center;
+	
+	.lists {
+		margin-top: 20px;
+	}
+	
+	button {
+		width: 100%;
+		height: 40px;
+		display: block;
+		margin: 5px 0;
+	}
+}
+
 .googleLogin
 {
 	width: 100%;
