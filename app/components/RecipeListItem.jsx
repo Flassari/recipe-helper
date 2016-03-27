@@ -40,12 +40,14 @@ export default class extends React.Component
 		var imageInlineStyle = {
 			backgroundImage: 'url(' + this.props.img + ')'
 		}
+		var isAddButtonDisabled = this.state.inProgress == true || this.props.ingredients.length == 0;
+		
 		return (
 			<div className="recipeListItem">
 				<div className="image" style={imageInlineStyle} onClick={this.onInfoClick.bind(this)}>
 					<div className="name">{this.props.name}</div>
 				</div>
-				<button type="button" className="add" onClick={this.onAddClick.bind(this)} disabled={this.state.inProgress == true} >Add</button>
+				<button type="button" className="add" onClick={this.onAddClick.bind(this)} disabled={isAddButtonDisabled} >Add</button>
 			</div>
 		)
 	}
