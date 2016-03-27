@@ -36,10 +36,7 @@ let shoppingListId;
 
 window.onApiLoaded = () =>
 {
-	wunderlist.logIn(wunderlistClientId, wunderlistTokenExchanger)
-	.then((accessToken) => {
-		wunderlistAccessToken = accessToken;
-	})
+	wunderlistLogIn()
 	.then(getShoppingList)
 	.then((listId) => {
 		shoppingListId = parseInt(listId);
@@ -63,7 +60,7 @@ function getRecipes()
 
 function downloadAndCacheRecipes()
 {
-	return authenticate()
+	return googleLogIn()
 	.then(getDriveFileId)
 	.then((fileId) => {
 		ReactDOM.render(<div>Loading recipes...</div>, document.getElementById('main'));
@@ -99,7 +96,27 @@ function pickDriveFile()
 	});
 }
 
-function authenticate()
+function wunderlistLogIn()
+{
+	return wunderlist.getAccessToken(wunderlistTokenExchanger)
+	.then((accessToken) => {
+		if (!accessToken)
+		{
+			ReactDOM.render(
+				<div className="wunderlistLogin">
+					Log in to Wunderlist to continue.
+					<button onClick={() => { wunderlist.authenticate(wunderlistClientId) }} ><span>Log in to Wunderlist</span></button>
+				</div>
+			, document.getElementById('main'));
+			return new Promise(() => {}); // Wait forever, next step is browser redirect.
+		}
+		
+		wunderlistAccessToken = accessToken;
+		return Promise.resolve(accessToken);
+	});
+}
+
+function googleLogIn()
 {
 	if (googleAccessToken)
 	{
@@ -112,8 +129,8 @@ function authenticate()
 		{
 			ReactDOM.render(
 				<div className="googleLogin">
-					Login to Drive and select your recipes document.
-					<button  onClick={() => { authenticator.authenticate(googleClientId, scope) }} ><span>Log into google</span></button>
+					Log in to Drive and select your recipes document.
+					<button  onClick={() => { authenticator.authenticate(googleClientId, scope) }} ><span>Log in to google</span></button>
 				</div>
 			, document.getElementById('main'));
 			return new Promise(() => {}); // Wait forever, next step is browser redirect.

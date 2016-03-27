@@ -2,7 +2,9 @@ import Promise from 'bluebird';
 import RecipeItem from './recipe-data-item.js';
 import wurl from 'wurl';
 
-export function logIn(clientId, tokenExchangerUrl)
+// Returns access token if it can be gotten without redirection, null otherwise.
+// If null is returned use authenticate(..) instead to go trough the whole flow.
+export function getAccessToken(tokenExchangerUrl)
 {
 	if (localStorage.wunderlistAccessToken)
 	{
@@ -14,10 +16,18 @@ export function logIn(clientId, tokenExchangerUrl)
 	{
 		// Remove junk from url
 		window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-		return getAuthToken(code, tokenExchangerUrl);
+		
+		return getAuthToken(code, tokenExchangerUrl).then((accessToken) => {
+			localStorage.wunderlistAccessToken = accessToken;
+			return accessToken;
+		});
 	}
+	
+	return Promise.resolve(null);
+}
 
-	// Not logged in and not redirected from oauth page, redirect to log in page.
+export function authenticate(clientId)
+{
 	let path = 'https://www.wunderlist.com/oauth/authorize?client_id=' + clientId + '&redirect_uri=' + window.location.href  + '&state=' + Math.random().toString(36);
 	window.location.href = path;
 	return null;
@@ -83,9 +93,7 @@ function getAuthToken(code, tokenExchangerUrl)
 		type : 'POST',
 		data: 'code=' + code
 	}).then((response) => {
-		let token = response.access_token;
-		localStorage.wunderlistAccessToken = token;
-		return token;
+		return response.access_token;
 	}));
 }
 
