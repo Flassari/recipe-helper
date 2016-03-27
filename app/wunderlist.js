@@ -12,7 +12,9 @@ export function logIn(clientId, tokenExchangerUrl)
 	let code = wurl('?code');
 	if (code) // User just returned from wunderlist auth page.
 	{
-		return getAuthToken(code, tokenExchangerUrl)
+		// Remove junk from url
+		window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+		return getAuthToken(code, tokenExchangerUrl);
 	}
 
 	// Not logged in and not redirected from oauth page, redirect to log in page.
