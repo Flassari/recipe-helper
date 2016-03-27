@@ -4,14 +4,9 @@ export default class extends React.Component
 {
 	render()
 	{
-		let nodes = this.props.recipe.nodes.map((nodeStr) => {
-			var node = document.createElement('div');
-			node.innerHTML = nodeStr;
-			return node;
-		});
 		return (
 			<div className="recipeInfo">
-				<button className="buttonBack" onClick={this.props.onClose}>Back</button>			
+				<button className="buttonBack" onClick={this.props.onClose}>Back</button>
 				<div className="content">
 					<h1>{this.props.recipe.name}</h1>
 					<img src={this.props.recipe.img} />
