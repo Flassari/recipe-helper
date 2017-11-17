@@ -42,7 +42,7 @@ window.onApiLoaded = () =>
 		shoppingListId = parseInt(listId);
 	})
 	.then(clearMain)
-	.then(getRecipes)
+	.then(downloadRecipes)
 	.then((recipes) => {
 		recipeManager.setRecipes(recipes);
 		return recipes;
@@ -50,15 +50,7 @@ window.onApiLoaded = () =>
 	.then(showRecipes);
 }
 
-function getRecipes()
-{
-	if (localStorage.recipes)
-		return JSON.parse(localStorage.recipes);
-	
-	return downloadAndCacheRecipes();
-}
-
-function downloadAndCacheRecipes()
+function downloadRecipes()
 {
 	return googleLogIn()
 	.then(getDriveFileId)
@@ -71,7 +63,6 @@ function downloadAndCacheRecipes()
 	})
 	.then((fileContent) => {
 		let recipes = recipeParser.parse(fileContent);
-		localStorage.recipes = JSON.stringify(recipes); // Store on device
 		return recipes;
 	});
 }
@@ -164,23 +155,9 @@ function showRecipes(recipes)
 	ReactDOM.render(
 		<div>
 			<RecipeList recipes={recipes} onAdd={addRecipeToWunderlist.bind(this)} />
-			<button type="button" style={{ marginTop: '25px' }} onClick={refreshRecipes} >Refresh recipes</button>
 			<button type="button" style={{ marginTop: '25px' }} onClick={logOut}>Log out</button>
 		</div>
 	, document.getElementById('main'));
-}
-
-function refreshRecipes()
-{
-	localStorage.recipes = '';
-	recipeManager.clear();
-	clearMain();
-	downloadAndCacheRecipes()
-	.then((recipes) => {
-		recipeManager.setRecipes(recipes);
-		return recipes;
-	})
-	.then(showRecipes);
 }
 
 function logOut()
