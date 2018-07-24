@@ -38,7 +38,7 @@ export default class extends React.Component
 	render()
 	{
 		var imageInlineStyle = {
-			backgroundImage: 'url(' + this.props.img + ')'
+			backgroundImage: this.props.img ? 'url(' + this.props.img + ')' : 'none'
 		}
 		var isAddButtonDisabled = this.state.inProgress == true || this.props.ingredients.length == 0;
 		
