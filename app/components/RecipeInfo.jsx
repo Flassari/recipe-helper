@@ -11,9 +11,7 @@ export default class extends React.Component
 					<h1>{this.props.recipe.name}</h1>
 					<img src={this.props.recipe.img} />
 					<div className="instructions">
-						{this.props.recipe.nodes.map((nodeStr) => {
-							return <div dangerouslySetInnerHTML={{__html: nodeStr}} />
-						})}
+						<div dangerouslySetInnerHTML={{__html: this.props.recipe.nodes.join('')}} />
 					</div>
 				</div>
 			</div>
