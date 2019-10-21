@@ -40,8 +40,7 @@ export default class extends React.Component
 		var imageInlineStyle = {
 			backgroundImage: this.props.img ? 'url(' + this.props.img + ')' : 'none'
 		}
-		// TODO: Disabled for now until new shopping list integration is implemented.
-		var isAddButtonDisabled = true; //this.state.inProgress == true || this.props.ingredients.length == 0;
+		var isAddButtonDisabled = this.state.inProgress == true || this.props.ingredients.length == 0;
 		
 		return (
 			<div className="recipeListItem">

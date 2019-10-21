@@ -31,8 +31,7 @@ export default class RecipeList extends React.Component
 				children.push(<RecipeCategory key={recipeCategory} categoryName={recipeCategory} recipes={recipes} onInfo={this.onInfo.bind(this)} onAdd={this.props.onAdd}/>);
 			}
 		}
-		return <div className="recipeList">NOTE: Shopping list integration is temporarily removed until a Wunderlist alternative is found.<br/>
-			{children}</div>;
+		return <div className="recipeList">{children}</div>;
 	}
 	
 	renderRecipeInfo()
