@@ -1,7 +1,7 @@
 {
 	"name": "recipe-helper",
 	"version": "1.0.0",
-	"description": "Import google doc recipes to wunderlist shopping list.",
+	"description": "Import google doc recipes to your shopping list.",
 	"main": "index.js",
 	"scripts": {
 		"build": "webpack --optimize-minimize",

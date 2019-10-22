@@ -2,7 +2,7 @@ body {
 	font-family: Arial;
 }
 
-.wunderlistLogin {
+.msTodoLogin {
 	width: 100%;
 	max-width: 500px;
 	margin: 30px auto 0 auto;
@@ -11,12 +11,12 @@ body {
 	button {
 		margin: 20px auto 0 auto;
 		display: block;
-		width: 180px;
+		width: 210px;
 		height: 40px;
-		background: url(../images/wunderlist_logo.png) #F9F9F9;
+		background: url(../images/ms_todo_logo.png) #F9F9F9;
 		background-size: 32px;
 		background-repeat: no-repeat;
-		background-position: 2px center;
+		background-position: 10px center;
 		border: 1px solid #D8D8D8;
 		
 		span {

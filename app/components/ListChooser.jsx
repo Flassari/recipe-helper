@@ -14,8 +14,8 @@ export default class extends React.Component
 			<div className="listChooser">
 				<span>Which list should your shopping ingredients be added to?</span>
 				<div className="lists">
-					{this.props.lists.map((list) => {
-						return <ListItem key={list.title} done={done} {...list} />;
+					{this.props.lists.value.map((list) => {
+						return <ListItem key={list.Name} done={done} {...list} />;
 					})}
 				</div>
 			</div>
@@ -27,11 +27,11 @@ class ListItem extends React.Component
 {
 	handleClick (e)
 	{
-		this.props.done(parseInt(this.props.id));
+		this.props.done(this.props.Id);
 	}
 	
 	render()
 	{
-		return (<button type="button" onClick={this.handleClick.bind(this)}>{this.props.title}</button>);
+		return (<button type="button" onClick={this.handleClick.bind(this)}>{this.props.Name}</button>);
 	}
 }
