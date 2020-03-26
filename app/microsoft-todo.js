@@ -2,6 +2,9 @@ import Promise from 'bluebird';
 import RecipeItem from './recipe-data-item.js';
 import wurl from 'wurl';
 
+// Manage scope here:
+// https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+
 // Returns access token if it can be gotten without redirection, null otherwise.
 // If null is returned use authenticate(..) instead to go trough the whole flow.
 export function getAccessToken(tokenExchangerUrl)
