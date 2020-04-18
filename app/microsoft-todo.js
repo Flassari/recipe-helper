@@ -98,6 +98,9 @@ function getAuthToken(code, tokenExchangerUrl)
 {
 	return Promise.resolve($.ajax({
 		url: tokenExchangerUrl,
+		headers: {
+			'Content-Type': 'text/plain'
+		},
 		type : 'POST',
 		data: code
 	}).then((response) => {

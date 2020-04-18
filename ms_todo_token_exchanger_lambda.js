@@ -36,6 +36,11 @@ exports.handler = async function(event) {
                 resolve({
                     statusCode: 200,
                     body: data,
+                    headers: {
+                        // REPLACE THIS WITH YOUR OWN DOMAIN
+                        "Access-Control-Allow-Origin": "https://flassari.github.io",
+                        "Content-Type": "application/json"
+                    },
                 });
             });
         });
