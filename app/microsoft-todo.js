@@ -99,7 +99,7 @@ function getAuthToken(code, tokenExchangerUrl)
 	return Promise.resolve($.ajax({
 		url: tokenExchangerUrl,
 		type : 'POST',
-		data: 'code=' + code
+		data: code
 	}).then((response) => {
 		return response.access_token;
 	}));

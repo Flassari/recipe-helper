@@ -25,7 +25,7 @@ let msTodoClientId = '1796ccc1-c296-461a-afb6-4db8edc413bf';
 let googleDeveloperKey = 'AIzaSyDIDYjtJyFO8uvHs0020b7eH7fromVbS-U';
 let googleClientId = '866832706562-g20thf05bjaif1m44fr779is60bjo7v1.apps.googleusercontent.com';
 // See ms_todo_token_exchanger.php for example implementation, you'll need to host this yourself.
-let msTodoTokenExchanger = 'http://flassari.is/recipehelper/ms_todo_token_exchanger.php';
+let msTodoTokenExchanger = 'https://mar2ki263c.execute-api.eu-north-1.amazonaws.com/ms_oauth2';
 
 // Scope for readonly access.
 let scope = 'https://www.googleapis.com/auth/drive.readonly';
